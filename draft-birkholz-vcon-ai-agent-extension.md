@@ -1,5 +1,5 @@
 ---
-title: "The JSON vCon - AI Agent Extension"
+title: "An AI Agent Extension for Virtualized Converstations (vCon)"
 abbrev: "vCon AI Agent Extension"
 category: std
 
@@ -241,7 +241,8 @@ entity:
 --- abstract
 
 A vCon is a container for data and information relating to a conversation.
-This document defines an extension to the JSON vCon CORE CDDL definition in support of verifiable records of conversations with and between autonomous agents.
+This document defines an extension to the vCon core specification via the CDDL extension points provided.
+The ai agent vCon extension specified in this document is in support of verifiable records of conversations with and between autonomous agents.
 Autonomous agents that use large language models increasingly perform consequential tasks on behalf of humans and other agents.
 Demonstrating that recorded agent behavior truthfully represents actual behavior is essential for accountability, compliance, and human oversight.
 The vCon extension specified in this document captures agent trajectory and agent conversation related records, such as agent metadata, message exchanges, tool invocations, reasoning traces, system events, file attribution, etc.
