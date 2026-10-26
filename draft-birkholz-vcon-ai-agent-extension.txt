@@ -14,28 +14,29 @@ Expires: 29 April 2027                                         SIPez LLC
                                                          26 October 2026
 
 
-                   The JSON vCon - AI Agent Extension
+      An AI Agent Extension for Virtualized Converstations (vCon)
              draft-birkholz-vcon-ai-agent-extension-latest
 
 Abstract
 
    A vCon is a container for data and information relating to a
-   conversation.  This document defines an extension to the JSON vCon
-   CORE CDDL definition in support of verifiable records of
-   conversations with and between autonomous agents.  Autonomous agents
-   that use large language models increasingly perform consequential
-   tasks on behalf of humans and other agents.  Demonstrating that
-   recorded agent behavior truthfully represents actual behavior is
-   essential for accountability, compliance, and human oversight.  The
-   vCon extension specified in this document captures agent trajectory
-   and agent conversation related records, such as agent metadata,
-   message exchanges, tool invocations, reasoning traces, system events,
-   file attribution, etc.  This data and information about autonomous
-   agent behaviour are recorded as parameters of vCon Objects and as new
-   vCon Event Object types.  The data CDDL definitions originate from
-   the former Verifiable Agent Conversation Records specification and
-   are adapted to the extension points of the current vCon CDDL data
-   defintition.
+   conversation.  This document defines an extension to the vCon core
+   specification via the CDDL extension points provided.  The ai agent
+   vCon extension specified in this document is in support of verifiable
+   records of conversations with and between autonomous agents.
+   Autonomous agents that use large language models increasingly perform
+   consequential tasks on behalf of humans and other agents.
+   Demonstrating that recorded agent behavior truthfully represents
+   actual behavior is essential for accountability, compliance, and
+   human oversight.  The vCon extension specified in this document
+   captures agent trajectory and agent conversation related records,
+   such as agent metadata, message exchanges, tool invocations,
+   reasoning traces, system events, file attribution, etc.  This data
+   and information about autonomous agent behaviour are recorded as
+   parameters of vCon Objects and as new vCon Event Object types.  The
+   data CDDL definitions originate from the former Verifiable Agent
+   Conversation Records specification and are adapted to the extension
+   points of the current vCon CDDL data defintition.
 
 About This Document
 
