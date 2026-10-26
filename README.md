@@ -1,8 +1,8 @@
 <!-- regenerate: on (set to off if you edit this file) -->
 
-# The JSON vCon - AI Agent Extension
+# An AI Agent Extension for Virtualized Conversations (vCon)
 
-This is the working area for the individual Internet-Draft, "The JSON vCon - AI Agent Extension".
+This is the working area for the individual Internet-Draft, "An AI Agent Extension for Virtualized Conversations (vCon)".
 
 * [Editor's Copy](https://henkbirkholz.github.io/draft-birkholz-vcon-ai-agent-extension/#go.draft-birkholz-vcon-ai-agent-extension.html)
 * [Datatracker Page](https://datatracker.ietf.org/doc/draft-birkholz-vcon-ai-agent-extension)
