@@ -1,0 +1,3016 @@
+
+
+
+
+Virtualized Conversations                                    H. Birkholz
+Internet-Draft                                            Fraunhofer SIT
+Intended status: Standards Track                             D. G Petrie
+Expires: 29 April 2027                                         SIPez LLC
+                                                        T. McCarthy-Howe
+                                                                  VCONIC
+                                                            J. Rosenberg
+                                                                        
+                                                               O. Steele
+                                                         26 October 2026
+
+
+                   The JSON vCon - AI Agent Extension
+             draft-birkholz-vcon-ai-agent-extension-latest
+
+Abstract
+
+   A vCon is a container for data and information relating to a
+   conversation.  This document defines an extension to the JSON vCon
+   CORE CDDL definition in support of verifiable records of
+   conversations with and between autonomous agents.  Autonomous agents
+   that use large language models increasingly perform consequential
+   tasks on behalf of humans and other agents.  Demonstrating that
+   recorded agent behavior truthfully represents actual behavior is
+   essential for accountability, compliance, and human oversight.  The
+   vCon extension specified in this document captures agent trajectory
+   and agent conversation related records, such as agent metadata,
+   message exchanges, tool invocations, reasoning traces, system events,
+   file attribution, etc.  This data and information about autonomous
+   agent behaviour are recorded as parameters of vCon Objects and as new
+   vCon Event Object types.  The data CDDL definitions originate from
+   the former Verifiable Agent Conversation Records specification and
+   are adapted to the extension points of the current vCon CDDL data
+   defintition.
+
+About This Document
+
+   This note is to be removed before publishing as an RFC.
+
+   Status information for this document may be found at
+   https://datatracker.ietf.org/doc/draft-birkholz-vcon-ai-agent-
+   extension/.
+
+   Discussion of this document takes place on the Virtualized
+   Conversations Working Group mailing list (mailto:vcon@ietf.org),
+   which is archived at https://mailarchive.ietf.org/arch/browse/vcon/.
+   Subscribe at https://www.ietf.org/mailman/listinfo/vcon/.
+
+Status of This Memo
+
+   This Internet-Draft is submitted in full conformance with the
+   provisions of BCP 78 and BCP 79.
+
+   Internet-Drafts are working documents of the Internet Engineering
+   Task Force (IETF).  Note that other groups may also distribute
+   working documents as Internet-Drafts.  The list of current Internet-
+   Drafts is at https://datatracker.ietf.org/drafts/current/.
+
+   Internet-Drafts are draft documents valid for a maximum of six months
+   and may be updated, replaced, or obsoleted by other documents at any
+   time.  It is inappropriate to use Internet-Drafts as reference
+   material or to cite them other than as "work in progress."
+
+   This Internet-Draft will expire on 29 April 2027.
+
+Copyright Notice
+
+   Copyright (c) 2026 IETF Trust and the persons identified as the
+   document authors.  All rights reserved.
+
+   This document is subject to BCP 78 and the IETF Trust's Legal
+   Provisions Relating to IETF Documents (https://trustee.ietf.org/
+   license-info) in effect on the date of publication of this document.
+   Please review these documents carefully, as they describe your rights
+   and restrictions with respect to this document.  Code Components
+   extracted from this document must include Revised BSD License text as
+   described in Section 4.e of the Trust Legal Provisions and are
+   provided without warranty as described in the Revised BSD License.
+
+Table of Contents
+
+   1.  Introduction
+     1.1.  Transition from Verifiable Agent Conversation Records to a
+           vCon extension
+   2.  Conventions and Definitions
+     2.1.  Terminology
+   3.  Extension Name
+   4.  Parameter Definitions
+     4.1.  Extension Points Defined by this Document
+     4.2.  vCon Object Parameters
+       4.2.1.  recording_agent
+       4.2.2.  vcs
+       4.2.3.  file_attribution
+     4.3.  Party Object Parameters
+       4.3.1.  agent_meta
+     4.4.  Session Object Parameters
+       4.4.1.  agent_session_id
+       4.4.2.  format
+       4.4.3.  environment
+     4.5.  Dialog Object Parameters
+       4.5.1.  model_id
+       4.5.2.  token_usage
+       4.5.3.  entry_id and parent_id
+     4.6.  Event Object Types and Parameters
+       4.6.1.  tool-call
+       4.6.2.  tool-result
+       4.6.3.  reasoning
+       4.6.4.  system-event
+       4.6.5.  Event Object Parameter Applicability by Type
+     4.7.  Reusable Definitions
+       4.7.1.  VCS_Context Object
+       4.7.2.  Agent Entry Reference
+   5.  Compatibility Considerations
+   6.  Incompatibility Considerations
+   7.  Privacy and Integrity Considerations
+     7.1.  Information Disclosure
+     7.2.  Sensitive Content in Records
+     7.3.  Redaction and De-identification
+     7.4.  External References
+     7.5.  Retention Considerations
+     7.6.  Correlation and Inference
+     7.7.  Authority Access
+   8.  Security Considerations
+     8.1.  Record Integrity
+     8.2.  Signing Key Protection
+     8.3.  Timestamp Integrity
+     8.4.  Adversarial Content
+     8.5.  Non-Repudiation
+     8.6.  Detection and Trust Boundaries
+   9.  IANA Considerations
+     9.1.  vCon JSON Registry Additions
+       9.1.1.  vCon Extensions Names Registry
+       9.1.2.  vCon Object Parameter Names Registry
+       9.1.3.  Party Object Parameter Names Registry
+       9.1.4.  Session Object Parameter Names Registry
+       9.1.5.  Dialog Object Parameter Names Registry
+       9.1.6.  Event Object Parameter Names Registry
+       9.1.7.  Event Type Name Registry
+       9.1.8.  New Object Parameter Names Registries
+   10. References
+     10.1.  Normative References
+     10.2.  Informative References
+   Appendix A.  Compliance Requirements for AI Agent Conversation
+           Records
+     A.1.  Applicable Requirement Frameworks
+     A.2.  Common Requirements Intersection
+       A.2.1.  REQ-1: Automatic Event Logging
+       A.2.2.  REQ-2: Timestamp Requirements
+       A.2.3.  REQ-3: Actor Identification
+       A.2.4.  REQ-4: Action/Event Type Recording
+       A.2.5.  REQ-5: Input/Output Recording (AI-Specific)
+       A.2.6.  REQ-6: Retention Period Requirements
+       A.2.7.  REQ-7: Tamper-Evidence and Integrity Protection
+       A.2.8.  REQ-8: Incident Response Support
+       A.2.9.  REQ-9: Anomaly and Risk Detection Support
+       A.2.10. REQ-10: Human Oversight Enablement
+       A.2.11. REQ-11: Traceability and Reproducibility
+     A.3.  Framework-Specific Requirements
+       A.3.1.  EU AI Act (High-Risk Systems)
+       A.3.2.  ETSI TS 104 223 Session Logging Requirements
+       A.3.3.  PCI DSS AI-Specific Guidance
+       A.3.4.  Financial Sector Requirements (FFIEC, BSI)
+     A.4.  Compliance Mapping Table
+     A.5.  Security Requirements addressing Regulatory Compliance
+       A.5.1.  Log Integrity
+       A.5.2.  Access Control
+       A.5.3.  Data Protection
+     A.6.  Related Standards and Emerging Work
+   Appendix B.  Application of SCITT and COSE for Transparency and
+           Authenticity
+     B.1.  The signed-agent-record Structure
+     B.2.  The trace-metadata Map
+   Appendix C.  Mapping of Verifiable Agent Conversation Record Data
+           Items
+   Appendix D.  Example vCons
+   Appendix E.  CDDL for the ai_agent Extension
+   Acknowledgments
+   Contributors
+   Authors' Addresses
+
+1.  Introduction
+
+   This document adds parameters and Event Object types for autonomous
+   agents to the vCon CDDL definition as described in [VCON-CORE].  The
+   general framework and requirements for defining an extension to vCon
+   CDDL definition are defined in [VCON-CORE].
+
+   The question of whether the recorded output of an autonomous agent
+   faithfully represents an agent's actual behavior has found new
+   urgency as the number of consequential tasks that are delegated to
+   agents increases rapidly.  Autonomous Agents--typically workload
+   instances of agentic artificial intelligence (AI) based on large
+   language models (LLM)--interact with other actors by design.  This
+   creates an interconnected web of agent interactions and conversations
+   that is currently rarely supervised or recorded in a systemic manner.
+   In essence, the two main types of actors interacting with autonomous
+   agents are humans and machines (e.g., other autonomous agents), or a
+   mix of them.  In agentic AI systems, machine actors interact with
+   other machine actors.  The number of interactions between machine
+   actors grows significantly more than the number of interactions
+   between human actors and machine actors.  While the responsible
+   parties for agent actions ultimately are humans--whether a natural
+   legal entity or an organization--agents act on behalf of humans and
+   on behalf of other agents.  To demonstrate due diligence, responsible
+   human parties require records of agent behavior to demonstrate policy
+   compliant behavior for agents acting under their authority.  These
+   increasingly complex interactions between multiple actors that can
+   also be triggered by machines (recursively) increase the need to
+   understand decision making and the chain of thoughts (CoT) of
+   autonomous agents, retroactively (i.e., accountability and
+   auditability after the fact).
+
+   The verifiable records of agent conversations that are specified in
+   this document provide an essential basis for operators to detect
+   divergences between intended and actual agent behavior after the
+   interaction has concluded.
+
+   For example:
+
+   *  An agent authorized to read files might invoke tools to modify
+      production systems or exfiltrate sensitive data beyond its
+      authorization scope.
+
+   *  An agent's visible CoT output might diverge from the reasoning
+      that actually produced its actions.
+
+   *  An agent might deliberately underperform during capability
+      evaluations while performing at full capacity during deployment.
+
+   This document defines conversation records extensions for vCon
+   representing activities of autonomous agents such that long-term
+   preservation of the evidentiary value of such records across chains
+   of custody (CoC) is possible.
+
+   This document defines vCon extensions that integrate verifiable
+   records of agent conversations as a building block into vCon towards
+   seven dedicated goals:
+
+   1.  The first goal is to assure that the recording of an agent
+       conversation (a distinct segment of the interaction with an
+       autonomous agent) being proffered is the same as the agent
+       conversation that actually occurred.
+
+   2.  The second goal is to provide a general structure of agent
+       conversations that can represent most common types of agent
+       conversation frames, is extensible, and allows for future
+       evolution of agent conversation complexity and corresponding
+       actor interaction.
+
+   3.  The third goal is to use existing IETF building blocks to present
+       believable evidence about how an agent conversation is recorded
+       utilizing Evidence generation as laid out in the Remote
+       ATtestation ProcedureS architecture [RFC9334].
+
+   4.  The fourth goal is to use existing IETF building blocks to render
+       conversation records auditable after the fact and enable non-
+       repudiation as laid out in the Supply Chain Integrity,
+       Transparency, and Trust architecture [RFC9943].
+
+   5.  The fifth goal is to enable detection of behavioral anomalies in
+       agent interactions, including unauthorized tool invocations,
+       inconsistencies between reasoning traces and actions, and
+       performance modulation across evaluation and deployment contexts,
+       through structured, comparable conversation records.
+
+   6.  The sixth goal is to enable cross-vendor interoperability by
+       defining a common representation for agent conversations that can
+       be translated from multiple existing agent implementations with
+       distinct native formats.
+
+   7.  The seventh goal is to produce records suitable for demonstrating
+       compliance with emerging regulatory requirements for AI system
+       documentation, traceability, and human oversight.
+
+   Most agent conversations today are represented in "human-readable"
+   text formats.  For example, JSON [JSON] is considered to be "human-
+   readable" as it can be presented to humans in human-computer-
+   interfaces (HCI) via off-the-shelf tools, e.g., pre-installed text
+   editors that allow such data to be consumed or modified by humans.  A
+   vCon is a JSON document, and so are the agent conversation records
+   extensions defined in this document.  The signed and the encrypted
+   forms of a vCon defined in [VCON-CORE] apply unchanged.  The
+   application of COSE [STD96] to vCons that carry agent conversation
+   vCon records is described in the SCITT architecture Appendix B.
+
+1.1.  Transition from Verifiable Agent Conversation Records to a vCon
+      extension
+
+   The data definitions in this document originate from the stand-alone
+   Verifiable Agent Conversation Records specification [VACR].  This
+   Internet-Draft rebuilds them as an extension of the vCon CDDL
+   definition.  Each high level part of a Verifiable Agent Conversation
+   Record is assigned to one of the extension points that [VCON-CORE]
+   defines as CDDL [CDDL] sockets, and the sections of this document
+   follow these extension points.  CDDL definitions that are used by
+   more than one extension point are collected in Section 4.7 after the
+   sections for the extension points.  Appendix C maps each data item of
+   [VACR] to its place in this document.
+
+   The vCon concepts of Session and Event that this extension builds
+   upon were proposed to accommodate AI agent conversations in
+   [ROSENBERG-RESTRUCTURE].  [HOWE-AGENT-SESSION] and [HOWE-PROVENANCE]
+   describe related approaches that carry agent session data and
+   generation provenance in a vCon.
+
+   Editor's Note:  The assignment of each part of a Verifiable Agent
+      Conversation Record to a vCon extension point is preliminary.
+      Each section that defines parameters for an extension point lists
+      alternatives that are still open for discussion.
+
+   Editor's Note:  This document is based on the editor's copy of
+      [VCON-CORE] (CDDL syntax version 0.5.0), which introduces the
+      Session Object and the Event Object.  Sections of [VCON-CORE] are
+      therefore referenced by name and not by number.
+
+2.  Conventions and Definitions
+
+   The key words "MUST", "MUST NOT", "REQUIRED", "SHALL", "SHALL NOT",
+   "SHOULD", "SHOULD NOT", "RECOMMENDED", "NOT RECOMMENDED", "MAY", and
+   "OPTIONAL" in this document are to be interpreted as described in
+   BCP 14 [RFC2119] [RFC8174] when, and only when, they appear in all
+   capitals, as shown here.
+
+   In this document, CDDL [CDDL] [RFC9682] is used to describe the data
+   formats of agent conversations in the JSON form accodring to vCon
+   CDDL definitions.
+
+2.1.  Terminology
+
+   See the Terminology section of [VCON-CORE] for terminology used in
+   this document.
+
+   The following terms are used in this document:
+
+   Agent:  An autonomous software system, typically based on a large
+      language model, that is represented by a Party Object and that
+      produces messages, invokes tools, and produces reasoning.
+
+   Agent Session:  A session of an agent, represented by a Session
+      Object.
+
+   Entry:  A discrete, system-recorded event of an agent session in the
+      native format of an agent implementation, such as a message, a
+      tool call, a tool result, a reasoning step, or a system event.  In
+      a vCon, an entry is represented by a Dialog Object or by an Event
+      Object.
+
+   Recording Agent:  The tool or agent that generates the vCon, as
+      distinct from the agent that conducted the conversation.
+
+3.  Extension Name
+
+   The extension name for this document is "ai_agent".
+
+   The string token "ai_agent" SHOULD be included in the extensions
+   parameter of a vCon that contains any of the parameters or Event
+   Object types defined in this document.  As described in Section 5 and
+   Section 6, this extension is intended to be fully interoperable with
+   the vCon definitions and the name "ai_agent" is not inlcuded as a
+   critical parameter.
+
+4.  Parameter Definitions
+
+   This section defines the parameters and Event Object types of the
+   "ai_agent" extension.  There is one subsection for each extension
+   point of [VCON-CORE] that this extension uses.  Each subsection
+   contains the CDDL that plugs into the corresponding socket of the
+   vCon CDDL.  New Objects are defined in the subsection of the
+   extension point at which they are introduced.
+
+   The Verifiable Agent Conversation Record of [VACR] is a top-level
+   container for all data produced by or about an agent conversation.
+   In this extension, the vCon Object is that container.  The uuid
+   parameter of the vCon Object identifies the record, and the
+   created_at parameter of the vCon Object provides the time the record
+   was generated.  The extension name in the extensions parameter
+   replaces the schema version string, as the extension mechanism of
+   [VCON-CORE] replaces schema versioning.  The record unifies two
+   complementary perspectives: the agent session captures how code was
+   produced (the full conversation replay), while file attribution
+   captures what code was produced (which files were modified and by
+   whom).
+
+4.1.  Extension Points Defined by this Document
+
+   Each Object defined in this document that does not allow arbitrary
+   additional members ends with a CDDL group socket, so that other
+   extensions can add parameters to it.  Each Event Object type defined
+   in this document also ends with a CDDL group socket.  The following
+   CDDL group sockets are defined in this document.
+
+      +===================+=========================+===============+
+      | Object            | CDDL Socket             | Defined in    |
+      +===================+=========================+===============+
+      | File_Attribution  | $$file-attribution-ext  | Section 4.2.3 |
+      +-------------------+-------------------------+---------------+
+      | File              | $$file-ext              | Section 4.2.3 |
+      +-------------------+-------------------------+---------------+
+      | File_Conversation | $$file-conversation-ext | Section 4.2.3 |
+      +-------------------+-------------------------+---------------+
+      | Range             | $$range-ext             | Section 4.2.3 |
+      +-------------------+-------------------------+---------------+
+      | Contributor       | $$contributor-ext       | Section 4.2.3 |
+      +-------------------+-------------------------+---------------+
+      | Resource          | $$resource-ext          | Section 4.2.3 |
+      +-------------------+-------------------------+---------------+
+      | "tool-call" type  | $$tool-call-event-ext   | Section 4.6.1 |
+      | Event Object      |                         |               |
+      +-------------------+-------------------------+---------------+
+      | "tool-result"     | $$tool-result-event-ext | Section 4.6.2 |
+      | type Event Object |                         |               |
+      +-------------------+-------------------------+---------------+
+      | "reasoning" type  | $$reasoning-event-ext   | Section 4.6.3 |
+      | Event Object      |                         |               |
+      +-------------------+-------------------------+---------------+
+      | "system-event"    | $$system-event-ext      | Section 4.6.4 |
+      | type Event Object |                         |               |
+      +-------------------+-------------------------+---------------+
+
+       Table 1: CDDL Group Extension Points Defined by this Document
+
+   Editor's Note:  The Recording_Agent, Agent_Meta, Environment,
+      Token_Usage, and VCS_Context Objects allow arbitrary additional
+      members (* tstr => any), as in [VACR].  Whether these Objects get
+      a CDDL group socket in addition to or instead of this wildcard is
+      for further discussion.
+
+4.2.  vCon Object Parameters
+
+   This extension adds the following parameters to the vCon Object,
+   using the vcon-ext socket:
+
+   $$vcon-ext //= ( recording_agent: recording_agent_type )
+   $$vcon-ext //= ( vcs: vcs_context_type )
+   $$vcon-ext //= ( file_attribution: file_attribution_type )
+
+   ; Recording_Agent Object
+   recording_agent_type = {
+       name: tstr,
+       ? version: tstr,
+       * tstr => any
+     }
+
+   ; File_Attribution Object
+   file_attribution_type = {
+       files: [* file_type],
+       * $$file-attribution-ext
+     }
+
+   ; File Object
+   file_type = {
+       ; relative path from the repository root
+       path: tstr,
+       conversations: [* file_conversation_type],
+       * $$file-ext
+     }
+
+   ; File_Conversation Object
+   file_conversation_type = {
+       ? url: uri_type,
+       ; default contributor for all ranges
+       ? contributor: contributor_type,
+       ranges: [* range_type],
+       ? related: [* resource_type],
+       * $$file-conversation-ext
+     }
+
+   ; Range Object
+   range_type = {
+       ; 1-indexed
+       start_line: uint,
+       ; 1-indexed, inclusive
+       end_line: uint,
+       ? content_hash: tstr,
+       ; default: "sha-256"
+       ? content_hash_alg: tstr,
+       ; overrides the conversation level contributor
+       ? contributor: contributor_type,
+       * $$range-ext
+     }
+
+   ; Contributor Object
+   contributor_type = {
+       type: "human" / "ai" / "mixed" / "unknown",
+       ? model_id: tstr,
+       * $$contributor-ext
+     }
+
+   ; Resource Object
+   resource_type = {
+       type: tstr,
+       url: uri_type,
+       * $$resource-ext
+     }
+
+   ; URI (RFC 3986)
+   uri_type = tstr .regexp
+       "(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"
+
+       Figure 1: CDDL for the ai_agent Parameters of the vCon Object
+
+   Editor's Note:  Alternative placements for recording_agent are a
+      Party Object that represents the recording tool and the Attachment
+      Object.  An alternative placement for file_attribution is the
+      Attachment Object, as proposed in [HOWE-AGENT-SESSION].
+
+4.2.1.  recording_agent
+
+   The recording_agent parameter identifies the tool or agent that
+   generated this vCon, as distinct from the agent that conducted the
+   conversation.  This distinction matters for provenance chains: the
+   recording tool's version affects how native data is translated into
+   the canonical data definition specified in this document.
+
+   *  recording_agent: "Recording_Agent" (optional)
+
+   The Recording_Agent Object contains the following members:
+
+   name:  The name of the recording tool or agent.
+
+   version:  The version of the recording tool.
+
+4.2.2.  vcs
+
+   The vcs parameter provides version control metadata at the record
+   level (repository, branch, revision).
+
+   *  vcs: "VCS_Context" (optional)
+
+   The VCS_Context Object is defined in Section 4.7.1.
+
+4.2.3.  file_attribution
+
+   NOTE: This section is specified but not yet validated against real
+   session data.  Implementation or validation against a healthy example
+   corpus is pending.
+
+   File attribution captures what code was produced: which files were
+   modified, which line ranges were changed, and who authored them.
+
+   *  file_attribution: "File_Attribution" (optional)
+
+   The File_Attribution Object is the top-level container for file
+   attribution data.  It holds an array of files, each with their
+   attributed line ranges and contributor information.
+
+   files:  Array of File Objects with attributed ranges.
+
+   $$file-attribution-ext:  A CDDL socket that can be used to extend the
+      File_Attribution Object.  See Section 4.1.
+
+   A File Object represents a single source file that was modified
+   during the conversation.  It groups all conversations that
+   contributed changes to this file.
+
+   path:  The file path relative to the repository root.
+
+   conversations:  The conversations that contributed modifications to
+      this file, as an array of File_Conversation Objects.
+
+   $$file-ext:  A CDDL socket that can be used to extend the File
+      Object.  See Section 4.1.
+
+   A File_Conversation Object links a specific session to the line
+   ranges it produced in a file.  This enables tracing from a line of
+   code back to the conversation that generated it.
+
+   url:  A URL pointing to the conversation source (e.g., a web UI
+      permalink).
+
+   contributor:  The default contributor for all ranges in this
+      conversation.  Can be overridden per-range.
+
+   ranges:  The line ranges in the file that were produced by this
+      conversation.
+
+   related:  External resources related to this conversation (e.g.,
+      issue trackers, documentation).
+
+   $$file-conversation-ext:  A CDDL socket that can be used to extend
+      the File_Conversation Object.  See Section 4.1.
+
+   A Range Object identifies a contiguous block of lines in a file that
+   were produced by a specific conversation.  Line numbers are 1-indexed
+   and inclusive.  The optional content hash enables position-
+   independent tracking when lines move due to later edits.
+
+   start_line:  The first line of the range (1-indexed).
+
+   end_line:  The last line of the range (1-indexed, inclusive).
+
+   content_hash:  A hash of the range content for position-independent
+      identification.
+
+   content_hash_alg:  The hash algorithm used (default: "sha-256").
+
+   contributor:  Overrides the conversation-level contributor for this
+      specific range.
+
+   $$range-ext:  A CDDL socket that can be used to extend the Range
+      Object.  See Section 4.1.
+
+   A Contributor Object identifies who authored a range of code.  The
+   type member distinguishes between human-authored, AI-generated,
+   mixed, and unknown authorship.
+
+   type:  The authorship category.
+
+   model_id:  The model identifier for AI-authored ranges.
+
+   $$contributor-ext:  A CDDL socket that can be used to extend the
+      Contributor Object.  See Section 4.1.
+
+   A Resource Object represents an external reference related to a
+   conversation, such as an issue tracker entry, a pull request, or a
+   documentation page.
+
+   type:  The resource type (e.g., "issue", "pr", "documentation").
+
+   url:  The URL of the resource.
+
+   $$resource-ext:  A CDDL socket that can be used to extend the
+      Resource Object.  See Section 4.1.
+
+   Editor's Note:  The content_hash member of the Range Object is not a
+      ContentHash as defined in [VCON-CORE].  Aligning both is for
+      further discussion.
+
+4.3.  Party Object Parameters
+
+   This extension adds the following parameter to the Party Object,
+   using the party-ext socket:
+
+   $$party-ext //= ( agent_meta: agent_meta_type )
+
+   ; Agent_Meta Object
+   agent_meta_type = {
+       ; e.g., "claude-opus-4-5-20251101"
+       model_id: tstr,
+       ; e.g., "anthropic", "google"
+       model_provider: tstr,
+       ; all models (multi-model sessions)
+       ? models: [* tstr],
+       ; e.g., "claude-code", "gemini-cli"
+       ? cli_name: tstr,
+       ? cli_version: tstr,
+       * tstr => any
+     }
+
+       Figure 2: CDDL for the ai_agent Parameters of the Party Object
+
+   Editor's Note:  Alternative placements for agent_meta are the Session
+      Object and the generation provenance of [HOWE-PROVENANCE].
+
+4.3.1.  agent_meta
+
+   The agent_meta parameter identifies the coding agent and language
+   model that a Party Object represents.  Agent identification is
+   essential for provenance tracking: knowing which model produced which
+   output enables auditing, capability assessment, and compliance
+   verification.  The type parameter of a Party Object that contains
+   agent_meta SHOULD be "bot".
+
+   *  agent_meta: "Agent_Meta" (optional)
+
+   The Agent_Meta Object contains the following members:
+
+   model_id:  The primary language model identifier, using the naming
+      convention of the provider (e.g., "claude-opus-4-5-20251101",
+      "gemini-2.0-flash").
+
+   model_provider:  The provider of the primary model (e.g.,
+      "anthropic", "google", "openai").
+
+   models:  List of all model identifiers used during the session.
+      Relevant for multi-model sessions where the agent switches between
+      models.
+
+   cli_name:  The name of the CLI tool or agent framework (e.g.,
+      "claude-code", "gemini-cli", "codex-cli").
+
+   cli_version:  The version of the CLI tool.
+
+4.4.  Session Object Parameters
+
+   An agent session is represented by a Session Object.  It captures the
+   full conversation between a user and an autonomous agent.  The Dialog
+   Objects and Event Objects that are part of the Session Object
+   represent messages, tool invocations, reasoning steps, and system
+   events.  Together, they preserve the complete interaction history
+   including all native agent metadata, enabling both replay and audit
+   of the conversation.  The start parameter of the Session Object
+   provides the time the agent session began, and the duration parameter
+   provides the time until the agent session ended.  An agent that
+   spawns sub-agents is represented by a Session Object that references
+   the Session Objects of the sub-agents using the Session_Reference
+   type "child", as described for AI agents in [VCON-CORE].
+
+   This extension adds the following parameters to the Session Object,
+   using the session-ext socket:
+
+   $$session-ext //= ( agent_session_id: tstr )
+   ; "interactive" / "autonomous" / vendor specific
+   $$session-ext //= ( format: tstr )
+   $$session-ext //= ( environment: environment_type )
+
+   ; Environment Object
+   environment_type = {
+       working_dir: tstr,
+       ? vcs: vcs_context_type,
+       ; sandbox mount paths
+       ? sandboxes: [* tstr],
+       * tstr => any
+     }
+
+      Figure 3: CDDL for the ai_agent Parameters of the Session Object
+
+4.4.1.  agent_session_id
+
+   The agent_session_id parameter contains an opaque string uniquely
+   identifying the agent session in the native format of the agent
+   implementation.  Values may be UUID v4, UUID v7, SHA-256 hashes, or
+   other formats.  The agent_session_id parameter is distinct from the
+   session_id parameter of the Session Object, which contains a
+   SessionId Object.
+
+   *  agent_session_id: "String" (optional)
+
+4.4.2.  format
+
+   The format parameter classifies the session style, such as
+   "interactive" (human-in-the-loop) or "autonomous" (fully automated).
+   Informative only; does not change the structure.
+
+   *  format: "String" (optional)
+
+4.4.3.  environment
+
+   The environment parameter captures execution context for the
+   conversation: where the agent was running, what version control state
+   was active, and whether sandboxing was in effect.  This context is
+   important for reproducibility and for understanding the scope of file
+   modifications.
+
+   *  environment: "Environment" (optional)
+
+   The Environment Object contains the following members:
+
+   working_dir:  The primary working directory path.  File paths in tool
+      calls are typically relative to this directory.
+
+   vcs:  Version control state at the time of the session (branch,
+      revision, etc.), as a VCS_Context Object (Section 4.7.1).
+
+   sandboxes:  Paths to sandbox mount points.  Some agents run in
+      sandboxed environments where the working directory is a temporary
+      mount.
+
+4.5.  Dialog Object Parameters
+
+   A message of an agent session represents a conversational turn:
+   either human input or agent response.  This is the most common entry
+   type, carrying the primary dialog content of a session.  A message is
+   represented by a "text" type Dialog Object.  The parties parameter of
+   the Dialog Object references the Party Object of the contributor of
+   the message.  Human (or upstream agent) input is contributed by the
+   Party Object of the user, and an agent response is contributed by the
+   Party Object of the agent.  The message body is contained in the
+   Dialog Content.  For assistant messages, additional metadata may be
+   present: the model that generated the response and token usage
+   statistics.
+
+   This extension adds the following parameters to the Dialog Object,
+   using the dialog-ext socket:
+
+   $$dialog-ext //= ( model_id: tstr )
+   $$dialog-ext //= ( token_usage: token_usage_type )
+   $$dialog-ext //= ( entry_id: agent_entry_id_type )
+   $$dialog-ext //= ( parent_id: agent_entry_id_type )
+
+   ; Token_Usage Object
+   token_usage_type = {
+       ; input tokens
+       ? input: uint,
+       ; output tokens
+       ? output: uint,
+       ; cached input tokens
+       ? cached: uint,
+       ; reasoning or thinking tokens
+       ? reasoning: uint,
+       ; total tokens
+       ? total: uint,
+       ; monetary cost in US dollars
+       ? cost: number,
+       * tstr => any
+     }
+
+      Figure 4: CDDL for the ai_agent Parameters of the Dialog Object
+
+   Editor's Note:  An alternative placement for model_id and token_usage
+      is the generation provenance of [HOWE-PROVENANCE].
+
+4.5.1.  model_id
+
+   The model_id parameter identifies the model that generated this
+   response.  Present on assistant messages, absent on user messages.
+
+   *  model_id: "String" (optional)
+
+4.5.2.  token_usage
+
+   The token_usage parameter captures token consumption metrics for a
+   model response.  Token usage data is essential for cost tracking,
+   quota management, and understanding model behavior.  All members are
+   optional because different agents report different subsets of token
+   metrics.
+
+   *  token_usage: "Token_Usage" (optional)
+
+   Editor's Note: add a non-empty generic here
+
+   The Token_Usage Object contains the following members:
+
+   input:  The number of input tokens consumed by this response.
+
+   output:  The number of output tokens generated.
+
+   cached:  The number of input tokens served from cache rather than
+      reprocessed.
+
+   reasoning:  Tokens consumed by chain-of-thought or reasoning
+      computation.
+
+   total:  The total token count.
+
+   cost:  The monetary cost in US dollars for this response.
+
+4.5.3.  entry_id and parent_id
+
+   The entry_id parameter contains the unique identifier of this entry
+   within the session.  The parent_id parameter references the parent
+   entry, enabling tree-structured conversations.  Both are defined in
+   Section 4.7.2.
+
+   *  entry_id: "String" (optional)
+
+   *  parent_id: "String" (optional)
+
+4.6.  Event Object Types and Parameters
+
+   This extension defines four Event Object types representing the kinds
+   of entries in an agent conversation that are not messages.  They are
+   added using the event-type-ext socket.  Each type ends with a socket
+   of its own, so that other extensions can add parameters to it.
+
+   $$event-type-ext //= (event_tool_call_type,)
+   $$event-type-ext //= (event_tool_result_type,)
+   $$event-type-ext //= (event_reasoning_type,)
+   $$event-type-ext //= (event_system_event_type,)
+
+   ; "tool-call" type Event Object
+   event_tool_call_type = (
+       type: "tool-call",
+       event_common_type,
+       ; e.g., "Bash", "Edit", "Read"
+       tool_name: tstr,
+       ; tool arguments
+       input: any,
+       ; links call and result
+       ? call_id: tstr,
+       agent_entry_reference_type,
+       * $$tool-call-event-ext
+     )
+
+   ; "tool-result" type Event Object
+   event_tool_result_type = (
+       type: "tool-result",
+       event_common_type,
+       ; tool output
+       output: any,
+       ; links call and result
+       ? call_id: tstr,
+       ; "success" / "error" / "completed"
+       ? status: tstr,
+       ? is_error: bool,
+       agent_entry_reference_type,
+       * $$tool-result-event-ext
+     )
+
+   ; "reasoning" type Event Object
+   event_reasoning_type = (
+       type: "reasoning",
+       event_common_type,
+       ; plaintext reasoning or structured content
+       content: any,
+       ; provider protected content
+       ? encrypted: tstr,
+       ; topic label
+       ? subject: tstr,
+       agent_entry_reference_type,
+       * $$reasoning-event-ext
+     )
+
+   ; "system-event" type Event Object
+   event_system_event_type = (
+       type: "system-event",
+       event_common_type,
+       ; event classifier
+       event_type: tstr,
+       ; event specific payload
+       ? data: { * tstr => any },
+       agent_entry_reference_type,
+       * $$system-event-ext
+     )
+
+             Figure 5: CDDL for the ai_agent Event Object Types
+
+   For all four types, the time parameter provides when the entry
+   occurred, the session parameter references the Session Object of the
+   agent session, and the party parameter references the Party Object of
+   the agent.  The entry_id and parent_id parameters (Section 4.7.2)
+   preserve the native entry identifiers and the tree structure of the
+   agent trace.
+
+   Editor's Note:  An alternative placement for the agent trace is a
+      single Analysis Object that carries the trace, as proposed in
+      [HOWE-AGENT-SESSION].  It is also an open question whether the
+      "tool-call" and "reasoning" Event Object types apply to human
+      parties.
+
+4.6.1.  tool-call
+
+   A "tool-call" type Event Object represents a tool invocation: which
+   tool was called and with what arguments.  Tool calls are central to
+   agent conversation records because tool use is the primary mechanism
+   by which agents interact with external environment.
+
+   tool_name:  The tool name (e.g., "Bash", "Edit", "Read",
+      "apply_patch").
+
+   input:  The arguments passed to the tool, preserved in their native
+      structure.
+
+   call_id:  Links this call to its corresponding result.
+
+   $$tool-call-event-ext:  A CDDL socket that can be used to extend the
+      "tool-call" type Event Object.  See Section 4.1.
+
+4.6.2.  tool-result
+
+   A "tool-result" type Event Object represents the output returned by a
+   tool after execution.  It is linked to its corresponding "tool-call"
+   type Event Object via the call_id parameter.  The result carries the
+   tool's response data and optional status metadata indicating success
+   or failure.
+
+   output:  The tool's response, preserved in native structure.
+
+   call_id:  Links this result to its corresponding call.
+
+   status:  Outcome status of the tool execution, such as "success",
+      "error", or "completed".
+
+   is_error:  Boolean error flag, present when the tool execution
+      failed.
+
+   $$tool-result-event-ext:  A CDDL socket that can be used to extend
+      the "tool-result" type Event Object.  See Section 4.1.
+
+4.6.3.  reasoning
+
+   A "reasoning" type Event Object captures CoT, thinking, or internal
+   reasoning content from the agent.  Not all agents expose reasoning
+   traces.  When they do, the content may be plaintext, structured
+   blocks, or encrypted.  Reasoning entries are valuable for auditing
+   decision-making processes and understanding why an agent took
+   particular actions.
+
+   content:  The reasoning text or structured content.  May be an empty
+      string when only encrypted content is available.
+
+   encrypted:  Encrypted reasoning content.  Used where the model
+      provider encrypts chain-of-thought output.
+
+   subject:  A topic label for the reasoning block.
+
+   $$reasoning-event-ext:  A CDDL socket that can be used to extend the
+      "reasoning" type Event Object.  See Section 4.1.
+
+4.6.4.  system-event
+
+   A "system-event" type Event Object records system lifecycle events
+   that are not part of the conversation dialog but are relevant for
+   understanding the session context.  Examples include session start
+   and end markers, token usage summaries, permission changes, and
+   configuration events.
+
+   event_type:  Classifies the event, such as "session-start", "session-
+      end", "token-count", or "permission-change".  The values are not
+      enumerated in the schema to accommodate vendor-specific event
+      types.
+
+   data:  Event-specific payload.  The structure varies by event type.
+
+   $$system-event-ext:  A CDDL socket that can be used to extend the
+      "system-event" type Event Object.  See Section 4.1.
+
+4.6.5.  Event Object Parameter Applicability by Type
+
+   The following table summarizes which Event Object parameters apply to
+   each Event Object type defined in this document.  The symbols used in
+   the table are the ones used in [VCON-CORE]: M the parameter MUST be
+   present, O the parameter is optional, X the parameter MUST NOT be
+   present.
+
+    +==================+=========+===========+=========+==============+
+    | Parameter        |tool-call|tool-result|reasoning| system-event |
+    +==================+=========+===========+=========+==============+
+    | type             |M        |M          |M        | M            |
+    +------------------+---------+-----------+---------+--------------+
+    | time             |M        |M          |M        | M            |
+    +------------------+---------+-----------+---------+--------------+
+    | session          |M        |M          |M        | M            |
+    +------------------+---------+-----------+---------+--------------+
+    | party            |M        |M          |M        | M            |
+    +------------------+---------+-----------+---------+--------------+
+    | dialog           |X        |X          |X        | X            |
+    +------------------+---------+-----------+---------+--------------+
+    | button,          |X        |X          |X        | X            |
+    | transferee,      |         |           |         |              |
+    | transfer_target, |         |           |         |              |
+    | consultation,    |         |           |         |              |
+    | target_session   |         |           |         |              |
+    +------------------+---------+-----------+---------+--------------+
+    | tool_name        |M        |X          |X        | X            |
+    +------------------+---------+-----------+---------+--------------+
+    | input            |M        |X          |X        | X            |
+    +------------------+---------+-----------+---------+--------------+
+    | call_id          |O        |O          |X        | X            |
+    +------------------+---------+-----------+---------+--------------+
+    | output           |X        |M          |X        | X            |
+    +------------------+---------+-----------+---------+--------------+
+    | status           |X        |O          |X        | X            |
+    +------------------+---------+-----------+---------+--------------+
+    | is_error         |X        |O          |X        | X            |
+    +------------------+---------+-----------+---------+--------------+
+    | content          |X        |X          |M        | X            |
+    +------------------+---------+-----------+---------+--------------+
+    | encrypted        |X        |X          |O        | X            |
+    +------------------+---------+-----------+---------+--------------+
+    | subject          |X        |X          |O        | X            |
+    +------------------+---------+-----------+---------+--------------+
+    | event_type       |X        |X          |X        | M            |
+    +------------------+---------+-----------+---------+--------------+
+    | data             |X        |X          |X        | O            |
+    +------------------+---------+-----------+---------+--------------+
+    | entry_id         |O        |O          |O        | O            |
+    +------------------+---------+-----------+---------+--------------+
+    | parent_id        |O        |O          |O        | O            |
+    +------------------+---------+-----------+---------+--------------+
+
+       Table 2: Event Object Parameter Applicability for the ai_agent
+                             Event Object Types
+
+4.7.  Reusable Definitions
+
+   The CDDL definitions in this section are used by more than one of the
+   extension points above.
+
+   vcs_context_type = {
+       ; "git" / "jj" / "hg" / "svn"
+       type: tstr,
+       ; commit SHA or change ID
+       ? revision: tstr,
+       ? branch: tstr,
+       ; repository URL
+       ? repository: tstr,
+       * tstr => any
+     }
+
+   ; Reference to an entry of the native agent trace
+   agent_entry_reference_type = (
+       ? entry_id: agent_entry_id_type,
+       ? parent_id: agent_entry_id_type
+     )
+
+   ; Per-entry unique reference within a session
+   agent_entry_id_type = tstr
+
+    Figure 6: CDDL for Definitions Used by More Than One Extension Point
+
+4.7.1.  VCS_Context Object
+
+   The VCS_Context Object captures version control metadata for
+   reproducibility.  Knowing the exact repository, branch, and commit at
+   the time of a conversation enables consumers to reconstruct the
+   codebase state and verify file attributions.  It is used by the vcs
+   parameter of the vCon Object (Section 4.2.2) and by the Environment
+   Object of the Session Object (Section 4.4.3).
+
+   type:  The version control system type (e.g., "git", "jj", "hg",
+      "svn").
+
+   revision:  The commit SHA or change identifier at session time.
+
+   branch:  The active branch name.
+
+   repository:  The repository URL.
+
+4.7.2.  Agent Entry Reference
+
+   Agent implementations identify each entry of their native trace and
+   arrange entries in a tree.  The entry_id and parent_id parameters
+   preserve this structure in the Dialog Objects (Section 4.5) and the
+   Event Objects (Section 4.6) of an agent session.
+
+   entry_id:  A per-entry unique reference within a session, enabling
+      parent-child linking.
+
+   parent_id:  References the parent entry, enabling tree-structured
+      conversations.  Entries that the native format nests inside
+      another entry reference that entry in parent_id.
+
+5.  Compatibility Considerations
+
+   This extension is Compatible as defined in [VCON-CORE].
+
+   The parameters added by this extension to the vCon Object
+   (recording_agent, vcs, file_attribution), to the Party Object
+   (agent_meta), to the Session Object (agent_session_id, format,
+   environment), and to the Dialog Object (model_id, token_usage,
+   entry_id, parent_id) are new and optional.  None of them changes the
+   meaning, structure, or permitted values of any parameter defined in
+   [VCON-CORE].  An implementation that does not recognize these
+   parameters can therefore continue to process the vCon correctly by
+   ignoring them.
+
+   The Event Object types added by this extension ("tool-call", "tool-
+   result", "reasoning", "system-event") are values that an
+   implementation that does not support this extension does not
+   recognize.  As defined in [VCON-CORE], such an implementation ignores
+   these Event Objects, and they remain in the events array so that
+   indexes are not changed.  The effect is that the agent trace is not
+   processed, while the messages of the agent session, which are Dialog
+   Objects, are processed as usual.  This does not make the extension
+   Incompatible.
+
+6.  Incompatibility Considerations
+
+   This extension introduces no incompatibilities.  All parameters and
+   Event Object types defined in this document are new and additive.
+   None of them changes the semantics, structure, or permitted values of
+   any parameter defined in [VCON-CORE].  Because no incompatibility is
+   introduced, the "ai_agent" extension name is not required to appear
+   in the critical parameter.
+
+   A redactor that does not support this extension cannot assess the
+   content of the parameters and Event Object types defined in this
+   document, which can carry PII (see Section 7).  As described in
+   [VCON-CORE], such a redactor may reject a vCon that lists "ai_agent"
+   in the extensions parameter.
+
+7.  Privacy and Integrity Considerations
+
+   Verifiable agent conversation records reveal substantial information
+   about agent behavior, system state, and user interactions.  The
+   privacy considerations of [RFC6973] apply.
+
+7.1.  Information Disclosure
+
+   User prompts captured in Dialog Objects may contain personal
+   identifiers, business confidential information, credentials
+   inadvertently included in prompts, or behavioral patterns.  Agent
+   responses and reasoning traces may reveal inference results that
+   expose information about users not explicitly provided, confidential
+   information retrieved by tools, or system architecture details
+   through tool names and parameters.  Implementations MUST treat user-
+   provided content as potentially containing personally identifiable
+   information.
+
+   Record metadata exposes operational details that may have privacy
+   implications.  Model identifiers reveal AI capabilities, CLI versions
+   enable targeted attacks against known vulnerabilities, working
+   directories expose file system structure, and VCS context discloses
+   repository names and commit timing.  Token usage patterns may enable
+   inference about conversation content even when the content itself is
+   protected.
+
+7.2.  Sensitive Content in Records
+
+   Reasoning entries may contain inferences that constitute special
+   category data, including health-related inferences from user queries,
+   political opinions derived from conversation context, or biometric
+   data processed by AI systems.  The encrypted parameter of the
+   "reasoning" Event Object type reflects that some model providers
+   encrypt chain-of-thought content; when reasoning is encrypted, audit
+   capabilities depend on the provider's cooperation.
+
+   Tool inputs and outputs warrant particular attention.  Tool call
+   inputs may contain credentials, API keys, or file contents.  Tool
+   results may contain query results with personal data from databases
+   or external services.  Implementations SHOULD provide configurable
+   redaction rules for common patterns and support selective entry type
+   recording based on deployment requirements.
+
+7.3.  Redaction and De-identification
+
+   The input parameter of "tool-call" type Event Objects, the output
+   parameter of "tool-result" type Event Objects, the content and
+   encrypted parameters of "reasoning" type Event Objects, and the data
+   parameter of "system-event" type Event Objects can carry party-
+   identifying data or PII.  The same applies to the Dialog Content of
+   the Dialog Objects that represent messages, to the working_dir and
+   sandboxes members of the Environment Object, and to the path and url
+   members of the File_Attribution Object.  A redactor is expected to
+   handle these parameters like Dialog Content, using the redacted
+   parameter of [VCON-CORE].  A redactor that removes an Event Object
+   entirely leaves a placeholder in the events array, so that indexes in
+   other Objects do not change.
+
+7.4.  External References
+
+   This extension does not add url and content_hash parameters for
+   externally referenced files as defined in [VCON-CORE], and therefore
+   introduces no new externally referenced content.  The url members of
+   the File_Conversation Object and of the Resource Object are
+   references to related resources and not content of the vCon.  They
+   are not protected by a content_hash.
+
+7.5.  Retention Considerations
+
+   Multiple frameworks impose retention requirements that may conflict
+   with data minimization principles.  Organizations must balance
+   compliance obligations requiring extended retention against privacy
+   principles requiring timely deletion.
+
+   Compliant data management may require separating raw personal data
+   from audit trail metadata, implementing automated deletion for
+   personal data after compliance-minimum periods, and maintaining
+   cryptographic commitments enabling verification without retaining
+   content.
+
+7.6.  Correlation and Inference
+
+   Presentations of the same record to multiple parties can be
+   correlated by matching on the signature component.  Session
+   identifiers enable linking of records across time, potentially
+   revealing long-term behavioral patterns or organizational structure.
+   Implementations SHOULD use unlinkable session identifiers where
+   correlation is not required.
+
+   Without accessing record content, observers may infer conversation
+   frequency and duration patterns, types of tools used, error rates, or
+   timing correlations with external events.  Metadata exposure in
+   unprotected headers warrants careful consideration; the trace-
+   metadata in the COSE unprotected header (Appendix B) reveals session
+   identifiers, agent vendor, and timestamps even when the payload is
+   encrypted.
+
+7.7.  Authority Access
+
+   Regulatory frameworks may require provision of records to authorities
+   upon request.  Access to records has to be logged, capturing who
+   accessed which records, when access occurred, what legal basis
+   justified access, and what data was disclosed.  This creates a
+   recursive consideration: access logs may themselves contain personal
+   data requiring protection.
+
+8.  Security Considerations
+
+   The security considerations of [VCON-CORE] apply.
+
+8.1.  Record Integrity
+
+   The signed form of a vCon [VCON-CORE] and the signed-agent-record
+   envelope (Appendix B) provide cryptographic integrity protection for
+   the serialized record payload.  A valid signature establishes that
+   the claimed signer produced the record but does not guarantee the
+   truthfulness of its contents.  Modifications to the record structure
+   after signing invalidate the signature, but modifications before
+   signing cannot be detected.  Implementations generating records
+   incrementally during a conversation MUST sign only after the
+   conversation concludes or at defined checkpoints.
+
+8.2.  Signing Key Protection
+
+   The security of signed records depends critically on the protection
+   of private signing keys.  If an attacker obtains a signing key, they
+   can forge records indistinguishable from genuine ones.  Protection
+   mechanisms range from operating system process isolation in
+   development environments to hardware security modules with physical
+   tampering resistance in high-assurance deployments.  Compromised
+   signing keys require rejection of records signed after the compromise
+   date and notification to Relying Parties.
+
+   Key provisioning processes must guarantee that exclusively valid
+   attestation key material is established.  Off-device key generation
+   requires confidentiality protection during transmission, creating
+   recursive security dependencies.  On-device key generation eliminates
+   transmission risks but requires chain-of-custody integrity to prevent
+   attackers from obtaining endorsement for keys they control.
+
+8.3.  Timestamp Integrity
+
+   Timestamps establish temporal ordering of events within records.
+   Attackers who can manipulate timestamps can backdate records, freeze
+   participants in chosen time periods to evade freshness checks, or
+   manipulate perceived temporal relationships between entries.
+   Timestamps within records are attested by the signer, not
+   independently verified.  Implementations requiring independent
+   timestamp verification SHOULD use external timestamping services or
+   transparency logs such as those defined in [RFC9943].
+
+8.4.  Adversarial Content
+
+   Processing verifiable agent conversation records involves parsing
+   content that may be produced by adversaries.  This applies both to
+   user-supplied prompts and to model outputs that may have been
+   influenced by adversarial inputs.  The open extensibility (* tstr =>
+   any) in the Objects defined in this document allows arbitrary
+   additional fields; implementations MUST NOT assume that unrecognized
+   fields are safe to process or display.
+
+   Records may contain content designed to exploit downstream systems.
+   Malicious prompts preserved in records may execute if records are
+   subsequently processed by AI systems.  Tool results may contain
+   executable content that executes if rendered unsafely in web
+   interfaces.  File paths in tool calls or file attribution entries may
+   attempt directory traversal.  Implementations MUST apply appropriate
+   sanitization before rendering content, executing it in agent
+   contexts, or using paths for file system operations.
+
+8.5.  Non-Repudiation
+
+   The signed form of a vCon and the signed-agent-record envelope alone
+   provide authenticity and integrity, not non-repudiation.  A signer
+   can claim key compromise or dispute the signing time without
+   independent evidence.  Non-repudiation requires additional
+   infrastructure such as transparency services [RFC9943] that provide
+   independent timestamp proof via registration receipts, append-only
+   logs preventing retroactive denial, and third-party witnesses to the
+   signing event.
+
+8.6.  Detection and Trust Boundaries
+
+   Verifiable agent conversation records primarily enable detection of
+   anomalous behavior rather than prevention.  Detection requires that
+   records accurately reflect actual agent behavior; an agent that
+   controls its own recording can omit or falsify entries.  The
+   recording_agent parameter distinguishes the recording tool from the
+   conversing agent, enabling Relying Parties to assess trust in the
+   recording process.
+
+   Trust boundaries exist between the agent runtime and recording
+   system, between the recording system and storage, between storage and
+   verification, and between verification and decision-making.  Attacks
+   at any boundary may compromise record integrity or confidentiality.
+
+9.  IANA Considerations
+
+9.1.  vCon JSON Registry Additions
+
+9.1.1.  vCon Extensions Names Registry
+
+   The following extension name is added to the vCon Extensions Names
+   Registry.
+
+     +===========+======================+============+===============+
+     | Extension | Extension            | Change     | Specification |
+     | Name      | Description          | Controller | Document(s)   |
+     +===========+======================+============+===============+
+     | ai_agent  | AI Agent             | IESG       | Section 3 RFC |
+     |           | conversation records |            | XXXX          |
+     +-----------+----------------------+------------+---------------+
+
+                                  Table 3
+
+9.1.2.  vCon Object Parameter Names Registry
+
+   The following defines additional values for the vCon Object Parameter
+   Names Registry.
+
+    +==================+=================+============+===============+
+    | Parameter Name   | Parameter       | Change     | Specification |
+    |                  | Description     | Controller | Document(s)   |
+    +==================+=================+============+===============+
+    | recording_agent  | tool that       | IESG       | Section 4.2.1 |
+    |                  | generated the   |            | RFC XXXX      |
+    |                  | record          |            |               |
+    +------------------+-----------------+------------+---------------+
+    | vcs              | record-level    | IESG       | Section 4.2.2 |
+    |                  | version control |            | RFC XXXX      |
+    |                  | context         |            |               |
+    +------------------+-----------------+------------+---------------+
+    | file_attribution | attribution of  | IESG       | Section 4.2.3 |
+    |                  | modified files  |            | RFC XXXX      |
+    +------------------+-----------------+------------+---------------+
+
+                                  Table 4
+
+9.1.3.  Party Object Parameter Names Registry
+
+   The following defines additional values for the Party Object
+   Parameter Names Registry.
+
+     +================+================+============+===============+
+     | Parameter Name | Parameter      | Change     | Specification |
+     |                | Description    | Controller | Document(s)   |
+     +================+================+============+===============+
+     | agent_meta     | agent and      | IESG       | Section 4.3.1 |
+     |                | model metadata |            | RFC XXXX      |
+     +----------------+----------------+------------+---------------+
+
+                                 Table 5
+
+9.1.4.  Session Object Parameter Names Registry
+
+   The following defines additional values for the Session Object
+   Parameter Names Registry.
+
+     +==================+==============+============+===============+
+     | Parameter Name   | Parameter    | Change     | Specification |
+     |                  | Description  | Controller | Document(s)   |
+     +==================+==============+============+===============+
+     | agent_session_id | native agent | IESG       | Section 4.4.1 |
+     |                  | session      |            | RFC XXXX      |
+     |                  | identifier   |            |               |
+     +------------------+--------------+------------+---------------+
+     | format           | agent        | IESG       | Section 4.4.2 |
+     |                  | session      |            | RFC XXXX      |
+     |                  | style        |            |               |
+     +------------------+--------------+------------+---------------+
+     | environment      | agent        | IESG       | Section 4.4.3 |
+     |                  | execution    |            | RFC XXXX      |
+     |                  | environment  |            |               |
+     +------------------+--------------+------------+---------------+
+
+                                 Table 6
+
+9.1.5.  Dialog Object Parameter Names Registry
+
+   The following defines additional values for the Dialog Object
+   Parameter Names Registry.
+
+    +=============+======================+============+===============+
+    | Parameter   | Parameter            | Change     | Specification |
+    | Name        | Description          | Controller | Document(s)   |
+    +=============+======================+============+===============+
+    | model_id    | model that generated | IESG       | Section 4.5.1 |
+    |             | the response         |            | RFC XXXX      |
+    +-------------+----------------------+------------+---------------+
+    | token_usage | token consumption    | IESG       | Section 4.5.2 |
+    |             | metrics              |            | RFC XXXX      |
+    +-------------+----------------------+------------+---------------+
+    | entry_id    | native agent entry   | IESG       | Section 4.7.2 |
+    |             | identifier           |            | RFC XXXX      |
+    +-------------+----------------------+------------+---------------+
+    | parent_id   | native agent parent  | IESG       | Section 4.7.2 |
+    |             | entry identifier     |            | RFC XXXX      |
+    +-------------+----------------------+------------+---------------+
+
+                                  Table 7
+
+9.1.6.  Event Object Parameter Names Registry
+
+   The following defines additional values for the Event Object
+   Parameter Names Registry.
+
+   +================+=====================+============+===============+
+   | Parameter      | Parameter           | Change     | Specification |
+   | Name           | Description         | Controller | Document(s)   |
+   +================+=====================+============+===============+
+   | tool_name      | name of the invoked | IESG       | Section 4.6.1 |
+   |                | tool                |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+   | input          | tool arguments      | IESG       | Section 4.6.1 |
+   |                |                     |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+   | call_id        | tool call and       | IESG       | Section 4.6.1 |
+   |                | result correlation  |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+   | output         | tool output         | IESG       | Section 4.6.2 |
+   |                |                     |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+   | status         | tool execution      | IESG       | Section 4.6.2 |
+   |                | status              |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+   | is_error       | tool execution      | IESG       | Section 4.6.2 |
+   |                | error flag          |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+   | content        | reasoning content   | IESG       | Section 4.6.3 |
+   |                |                     |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+   | encrypted      | encrypted reasoning | IESG       | Section 4.6.3 |
+   |                | content             |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+   | subject        | reasoning topic     | IESG       | Section 4.6.3 |
+   |                | label               |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+   | event_type     | system event        | IESG       | Section 4.6.4 |
+   |                | classifier          |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+   | data           | system event        | IESG       | Section 4.6.4 |
+   |                | payload             |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+   | entry_id       | native agent entry  | IESG       | Section 4.7.2 |
+   |                | identifier          |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+   | parent_id      | native agent parent | IESG       | Section 4.7.2 |
+   |                | entry identifier    |            | RFC XXXX      |
+   +----------------+---------------------+------------+---------------+
+
+                                  Table 8
+
+9.1.7.  Event Type Name Registry
+
+   The following defines additional values for the Event Type Name
+   Registry.
+
+    +=================+=================+============+===============+
+    | Event Type Name | Event Type      | Change     | Specification |
+    |                 | Description     | Controller | Document(s)   |
+    +=================+=================+============+===============+
+    | tool-call       | agent tool      | IESG       | Section 4.6.1 |
+    |                 | invocation      |            | RFC XXXX      |
+    +-----------------+-----------------+------------+---------------+
+    | tool-result     | agent tool      | IESG       | Section 4.6.2 |
+    |                 | result          |            | RFC XXXX      |
+    +-----------------+-----------------+------------+---------------+
+    | reasoning       | agent reasoning | IESG       | Section 4.6.3 |
+    |                 |                 |            | RFC XXXX      |
+    +-----------------+-----------------+------------+---------------+
+    | system-event    | agent system    | IESG       | Section 4.6.4 |
+    |                 | lifecycle event |            | RFC XXXX      |
+    +-----------------+-----------------+------------+---------------+
+
+                                 Table 9
+
+9.1.8.  New Object Parameter Names Registries
+
+   Editor's Note:  [VCON-CORE] recommends requesting a parameter names
+      registry for each new Object.  This extension defines the
+      Recording_Agent, File_Attribution, File, File_Conversation, Range,
+      Contributor, Resource, Agent_Meta, Environment, Token_Usage, and
+      VCS_Context Objects.  The registries will be requested once the
+      assignment of these Objects to extension points is settled.
+
+10.  References
+
+10.1.  Normative References
+
+   [JSON]     Bray, T., Ed., "The JavaScript Object Notation (JSON) Data
+              Interchange Format", STD 90, RFC 8259,
+              DOI 10.17487/RFC8259, December 2017,
+              <https://www.rfc-editor.org/rfc/rfc8259>.
+
+   [RFC2119]  Bradner, S., "Key words for use in RFCs to Indicate
+              Requirement Levels", BCP 14, RFC 2119,
+              DOI 10.17487/RFC2119, March 1997,
+              <https://www.rfc-editor.org/rfc/rfc2119>.
+
+   [RFC8174]  Leiba, B., "Ambiguity of Uppercase vs Lowercase in RFC
+              2119 Key Words", BCP 14, RFC 8174, DOI 10.17487/RFC8174,
+              May 2017, <https://www.rfc-editor.org/rfc/rfc8174>.
+
+   [VCON-CORE]
+              Petrie, D., "The JSON format for vCon - Conversation Data
+              Container", Work in Progress, Internet-Draft, draft-ietf-
+              vcon-vcon-core-04, 7 September 2026,
+              <https://datatracker.ietf.org/doc/html/draft-ietf-vcon-
+              vcon-core-04>.
+
+10.2.  Informative References
+
+   [AICPA_TSC_2017]
+              American Institute of Certified Public Accountants and
+              Chartered Institute of Management Accountants, "Trust
+              Services Criteria for Security, Availability, Processing
+              Integrity, Confidentiality, and Privacy (With Revised
+              Points of Focus - 2022)", AICPA Trust Services Criteria,
+              2017, <https://www.aicpa-cima.com/resources/download/2017-
+              trust-services-criteria-with-revised-points-of-focus-
+              2022>.
+
+   [BSI_AI_FINANCE_2024]
+              Bundesamt fuer Sicherheit in der Informationstechnik,
+              "Test Criteria Catalogue for AI Systems in Finance",
+              BSI AI Finance Test Criteria, 2024,
+              <https://www.bsi.bund.de/SharedDocs/Downloads/EN/BSI/KI/
+              AI-Finance_Test-Criteria.pdf>.
+
+   [CDDL]     Birkholz, H., Vigano, C., and C. Bormann, "Concise Data
+              Definition Language (CDDL): A Notational Convention to
+              Express Concise Binary Object Representation (CBOR) and
+              JSON Data Structures", RFC 8610, DOI 10.17487/RFC8610,
+              June 2019, <https://www.rfc-editor.org/rfc/rfc8610>.
+
+   [EMERGENT_MISALIGNMENT_2025]
+              Betley, J., Tan, D., Warncke, N., Sztyber-Betley, A., Bao,
+              X., Soto, M., Labenz, N., and O. Evans, "Emergent
+              Misalignment: Narrow finetuning can produce broadly
+              misaligned LLMs", arXiv 2502.17424, PMLR 267:4043-4068,
+              February 2025, <https://arxiv.org/abs/2502.17424>.
+
+   [ETSI_TS_104223_2025]
+              European Telecommunications Standards Institute, "Securing
+              Artificial Intelligence (SAI); Baseline Cyber Security
+              Requirements for AI Models and Systems", ETSI TS 104 223,
+              V1.1.1, April 2025, <https://www.etsi.org/deliver/
+              etsi_ts/104200_104299/104223/01.01.01_60/
+              ts_104223v010101p.pdf>.
+
+   [EU_AI_ACT_2024]
+              European Parliament and Council of the European Union,
+              "Regulation (EU) 2024/1689 (Artificial Intelligence Act)",
+              Official Journal of the European Union L 2024/1689,
+              CELEX: 32024R1689, July 2024,
+              <https://eur-lex.europa.eu/eli/reg/2024/1689/oj>.
+
+   [EU_CRA_2024]
+              European Parliament and Council of the European Union,
+              "Regulation (EU) 2024/2847 (Cyber Resilience Act)",
+              Official Journal of the European Union L 2024/2847,
+              CELEX: 32024R2847, November 2024,
+              <https://eur-lex.europa.eu/eli/reg/2024/2847/oj>.
+
+   [EU_NIS2_2022]
+              European Parliament and Council of the European Union,
+              "Directive (EU) 2022/2555 (NIS 2 Directive)", Official
+              Journal of the European Union L 333, CELEX: 32022L2555,
+              December 2022.
+
+   [FFIEC_IT_HANDBOOK_2024]
+              Federal Financial Institutions Examination Council,
+              "Information Technology Examination Handbook", FFIEC IT
+              Examination Handbook, August 2024,
+              <https://ithandbook.ffiec.gov/>.
+
+   [HOWE-AGENT-SESSION]
+              McCarthy-Howe, T., "vCon Agent Session", Work in Progress,
+              Internet-Draft, draft-howe-vcon-agent-session-00, 20 May
+              2026, <https://datatracker.ietf.org/doc/html/draft-howe-
+              vcon-agent-session-00>.
+
+   [HOWE-PROVENANCE]
+              McCarthy-Howe, T., "vCon Generation Provenance", Work in
+              Progress, Internet-Draft, draft-howe-vcon-provenance-00, 4
+              June 2026, <https://datatracker.ietf.org/doc/html/draft-
+              howe-vcon-provenance-00>.
+
+   [ISO_IEC_42001_2023]
+              International Organization for Standardization and
+              International Electrotechnical Commission, "Information
+              technology - Artificial intelligence - Management system",
+              ISO/IEC 42001:2023, December 2023,
+              <https://www.iso.org/standard/42001>.
+
+   [ISO_IEC_DIS_24970]
+              International Organization for Standardization and
+              International Electrotechnical Commission, "Artificial
+              intelligence - AI system logging", ISO/IEC DIS 24970,
+              2025, <https://www.iso.org/standard/88723.html>.
+
+   [NIST_AI_100_2_E2025]
+              National Institute of Standards and Technology,
+              "Adversarial Machine Learning: A Taxonomy and Terminology
+              of Attacks and Mitigations", NIST AI 100-2 E2025, March
+              2025, <https://csrc.nist.gov/pubs/ai/100/2/e2025/final>.
+
+   [NIST_SP_800_53_R5]
+              National Institute of Standards and Technology, "Security
+              and Privacy Controls for Information Systems and
+              Organizations", NIST Special Publication 800-53, Revision
+              5, September 2020,
+              <https://csrc.nist.gov/pubs/sp/800/53/r5/upd1/final>.
+
+   [OMB_M_21_31]
+              Office of Management and Budget, "Improving the Federal
+              Government's Investigative and Remediation Capabilities
+              Related to Cybersecurity Incidents", OMB
+              Memorandum M-21-31, August 2021,
+              <https://www.whitehouse.gov/wp-content/uploads/2021/08/
+              M-21-31-Improving-the-Federal-Governments-Investigative-
+              and-Remediation-Capabilities-Related-to-Cybersecurity-
+              Incidents.pdf>.
+
+   [PCI_DSS_V4_0_1]
+              PCI Security Standards Council, "Payment Card Industry
+              Data Security Standard", PCI DSS Version 4.0.1, June 2024,
+              <https://www.pcisecuritystandards.org/document_library/>.
+
+   [RFC6973]  Cooper, A., Tschofenig, H., Aboba, B., Peterson, J.,
+              Morris, J., Hansen, M., and R. Smith, "Privacy
+              Considerations for Internet Protocols", RFC 6973,
+              DOI 10.17487/RFC6973, July 2013,
+              <https://www.rfc-editor.org/rfc/rfc6973>.
+
+   [RFC9334]  Birkholz, H., Thaler, D., Richardson, M., Smith, N., and
+              W. Pan, "Remote ATtestation procedureS (RATS)
+              Architecture", RFC 9334, DOI 10.17487/RFC9334, January
+              2023, <https://www.rfc-editor.org/rfc/rfc9334>.
+
+   [RFC9360]  Schaad, J., "CBOR Object Signing and Encryption (COSE):
+              Header Parameters for Carrying and Referencing X.509
+              Certificates", RFC 9360, DOI 10.17487/RFC9360, February
+              2023, <https://www.rfc-editor.org/rfc/rfc9360>.
+
+   [RFC9393]  Birkholz, H., Fitzgerald-McKay, J., Schmidt, C., and D.
+              Waltermire, "Concise Software Identification Tags",
+              RFC 9393, DOI 10.17487/RFC9393, June 2023,
+              <https://www.rfc-editor.org/rfc/rfc9393>.
+
+   [RFC9597]  Looker, T. and M.B. Jones, "CBOR Web Token (CWT) Claims in
+              COSE Headers", RFC 9597, DOI 10.17487/RFC9597, June 2024,
+              <https://www.rfc-editor.org/rfc/rfc9597>.
+
+   [RFC9682]  Bormann, C., "Updates to the Concise Data Definition
+              Language (CDDL) Grammar", RFC 9682, DOI 10.17487/RFC9682,
+              November 2024, <https://www.rfc-editor.org/rfc/rfc9682>.
+
+   [RFC9942]  Steele, O., Birkholz, H., Delignat-Lavaud, A., and C.
+              Fournet, "CBOR Object Signing and Encryption (COSE)
+              Receipts", RFC 9942, DOI 10.17487/RFC9942, June 2026,
+              <https://www.rfc-editor.org/rfc/rfc9942>.
+
+   [RFC9943]  Birkholz, H., Delignat-Lavaud, A., Fournet, C., Deshpande,
+              Y., and S. Lasker, "An Architecture for Trustworthy and
+              Transparent Digital Supply Chains", RFC 9943,
+              DOI 10.17487/RFC9943, June 2026,
+              <https://www.rfc-editor.org/rfc/rfc9943>.
+
+   [ROSENBERG-RESTRUCTURE]
+              Rosenberg, J., "Virtualized Conversations (VCON)
+              Restructure to Facilitate AI Agent Use Cases", Work in
+              Progress, Internet-Draft, draft-rosenberg-vcon-
+              restructure-00, 11 September 2026,
+              <https://datatracker.ietf.org/doc/html/draft-rosenberg-
+              vcon-restructure-00>.
+
+   [STD94]    Bormann, C. and P. Hoffman, "Concise Binary Object
+              Representation (CBOR)", STD 94, RFC 8949,
+              DOI 10.17487/RFC8949, December 2020,
+              <https://www.rfc-editor.org/rfc/rfc8949>.
+
+   [STD96]    Schaad, J., "CBOR Object Signing and Encryption (COSE):
+              Structures and Process", STD 96, RFC 9052,
+              DOI 10.17487/RFC9052, August 2022,
+              <https://www.rfc-editor.org/rfc/rfc9052>.
+
+   [VACR]     Birkholz, H., Heldt, T., and O. Steele, "Verifiable Agent
+              Conversation Records", Work in Progress, Internet-Draft,
+              draft-birkholz-verifiable-agent-conversations-01, 31
+              August 2026, <https://datatracker.ietf.org/doc/html/draft-
+              birkholz-verifiable-agent-conversations-01>.
+
+Appendix A.  Compliance Requirements for AI Agent Conversation Records
+
+   This section identifies the intersection of logging, traceability,
+   and record-keeping requirements across major compliance frameworks
+   applicable to AI systems.  The verifiable agent conversation format
+   defined in this document addresses these requirements by providing a
+   standardized, cryptographically verifiable record of AI agent
+   interactions.
+
+A.1.  Applicable Requirement Frameworks
+
+   The following frameworks were analyzed for their requirements on AI
+   agent traceability and session logging:
+
+    +==========================+=============+=============+==========+
+    | Framework                |Jurisdiction |Sector       |Status    |
+    +==========================+=============+=============+==========+
+    | EU AI Act                |EU           |Cross-sector |In force  |
+    | [EU_AI_ACT_2024]         |             |             |Aug 2024  |
+    +--------------------------+-------------+-------------+----------+
+    | Cyber Resilience Act     |EU           |Products with|In force  |
+    | [EU_CRA_2024]            |             |digital      |Dec 2024  |
+    |                          |             |elements     |          |
+    +--------------------------+-------------+-------------+----------+
+    | NIS2 Directive           |EU           |Essential/   |Transposed|
+    | [EU_NIS2_2022]           |             |important    |Oct 2024  |
+    |                          |             |entities     |          |
+    +--------------------------+-------------+-------------+----------+
+    | ETSI TS 104 223          |EU/          |AI systems   |Published |
+    | [ETSI_TS_104223_2025]    |International|             |Apr 2025  |
+    +--------------------------+-------------+-------------+----------+
+    | SOC 2 Trust Services     |US/          |Service      |Active    |
+    | Criteria                 |International|organizations|          |
+    | [AICPA_TSC_2017]         |             |             |          |
+    +--------------------------+-------------+-------------+----------+
+    | FedRAMP                  |US           |Federal cloud|Active    |
+    | [NIST_SP_800_53_R5]      |             |services     |          |
+    | [OMB_M_21_31]            |             |             |          |
+    +--------------------------+-------------+-------------+----------+
+    | PCI DSS [PCI_DSS_V4_0_1] |International|Payment card |Mandatory |
+    |                          |             |industry     |Mar 2025  |
+    +--------------------------+-------------+-------------+----------+
+    | ISO/IEC 42001            |International|AI management|Published |
+    | [ISO_IEC_42001_2023]     |             |systems      |2023      |
+    +--------------------------+-------------+-------------+----------+
+    | FFIEC IT Handbook        |US           |Financial    |Updated   |
+    | [FFIEC_IT_HANDBOOK_2024] |             |institutions |2024      |
+    +--------------------------+-------------+-------------+----------+
+    | BSI AI Finance Test      |Germany      |Financial    |Published |
+    | Criteria                 |             |sector AI    |2024      |
+    | [BSI_AI_FINANCE_2024]    |             |             |          |
+    +--------------------------+-------------+-------------+----------+
+    | NIST AI 100-2            |US           |Cross-sector |Published |
+    | [NIST_AI_100_2_E2025]    |             |             |2025      |
+    +--------------------------+-------------+-------------+----------+
+
+                                  Table 10
+
+A.2.  Common Requirements Intersection
+
+   The analysis of the frameworks listed above results in eleven
+   categories of requirements that appear across ALL or MOST frameworks.
+   These categories frame and represent a minimum baseline that
+   verifiable agent conversation records MUST support.
+
+A.2.1.  REQ-1: Automatic Event Logging
+
+   All frameworks require automatic, system-generated logging of events
+   without reliance on manual recording.  Explicit requirements are
+   listed as follows:
+
+   +===================+===============================================+
+   | Framework         | Requirement                                   |
+   +===================+===============================================+
+   | EU AI Act Art.    | "High-risk AI systems shall technically allow |
+   | 12                | for the automatic recording of events (logs)" |
+   +-------------------+-----------------------------------------------+
+   | ETSI TS 104223    | "System Operators shall log system and user   |
+   | 5.4.2-1           | actions"                                      |
+   +-------------------+-----------------------------------------------+
+   | SOC 2 CC7.2       | "Complete and chronological record of all     |
+   |                   | user actions and system responses"            |
+   +-------------------+-----------------------------------------------+
+   | FedRAMP AU-12     | "Audit Record Generation" control requirement |
+   +-------------------+-----------------------------------------------+
+   | PCI DSS 4.0       | "Audit logs implemented to support detection  |
+   | Req 10            | of anomalies"                                 |
+   +-------------------+-----------------------------------------------+
+   | ISO 42001         | "AI system recording of event logs"           |
+   | A.6.2.8           |                                               |
+   +-------------------+-----------------------------------------------+
+
+                                  Table 11
+
+   Mapping to this specification: The Dialog Objects and Event Objects
+   of a Session Object capture all events automatically.  Each of them
+   represents a discrete, system-recorded event with structured
+   metadata.
+
+A.2.2.  REQ-2: Timestamp Requirements
+
+   Most frameworks require precise temporal information for each logged
+   event.  Explicit requirements are listed as follows:
+
+       +======================+====================================+
+       | Framework            | Requirement                        |
+       +======================+====================================+
+       | EU AI Act Art. 12(2) | "Precise timestamps for each usage |
+       |                      | session" (biometric systems)       |
+       +----------------------+------------------------------------+
+       | PCI DSS 4.0 Req 10.6 | "Time-synchronization mechanisms   |
+       |                      | support consistent time settings"  |
+       +----------------------+------------------------------------+
+       | SOC 2                | "When the activity was performed   |
+       |                      | via timestamp"                     |
+       +----------------------+------------------------------------+
+       | NIS2                 | "Precise logging of when an        |
+       |                      | incident was first detected"       |
+       +----------------------+------------------------------------+
+
+                                  Table 12
+
+   Mapping to this specification: The start parameter of each Dialog
+   Object and the time parameter of each Event Object use the Date type
+   of [VCON-CORE], which is an RFC 3339 string, ensuring
+   interoperability across implementations.
+
+A.2.3.  REQ-3: Actor Identification
+
+   Most frameworks require some attribution of actions to identifiable
+   actors (human or system).  Explicit requirements are listed as
+   follows:
+
+       +===============+==========================================+
+       | Framework     | Requirement                              |
+       +===============+==========================================+
+       | EU AI Act     | "Identification of the natural persons   |
+       | Art. 12(3)(d) | involved in the verification of results" |
+       +---------------+------------------------------------------+
+       | SOC 2         | "The process or user who initiated the   |
+       |               | activity (Who)"                          |
+       +---------------+------------------------------------------+
+       | PCI DSS 4.0   | Attribution to "Who" performed each      |
+       |               | action                                   |
+       +---------------+------------------------------------------+
+       | FedRAMP AC-2  | Account management and identification    |
+       +---------------+------------------------------------------+
+
+                                 Table 13
+
+   Mapping to this specification: The contributor type captures actor
+   attribution with type (human/ai/mixed/unknown) and optional model_id.
+   The agent_meta parameter of the Party Object identifies the AI
+   system.
+
+A.2.4.  REQ-4: Action/Event Type Recording
+
+   All frameworks require recording of what action or event occurred.
+   Explicit requirements are listed as follows:
+
+     +===================+==========================================+
+     | Framework         | Requirement                              |
+     +===================+==========================================+
+     | EU AI Act Art. 12 | "Events relevant for identifying         |
+     |                   | situations that may result in...risk"    |
+     +-------------------+------------------------------------------+
+     | ETSI TS 104223    | "Audit log of changes to system prompts  |
+     | 5.2.4-3           | or other model configuration"            |
+     +-------------------+------------------------------------------+
+     | SOC 2             | "The action they performed such as file  |
+     |                   | transferred, created, or deleted (What)" |
+     +-------------------+------------------------------------------+
+     | PCI DSS 4.0       | "What" component of audit trail          |
+     +-------------------+------------------------------------------+
+
+                                 Table 14
+
+   Mapping to this specification: The type parameter of Dialog Objects
+   and Event Objects discriminates event types: text (messages), tool-
+   call, tool-result, reasoning, system-event.
+
+A.2.5.  REQ-5: Input/Output Recording (AI-Specific)
+
+   All AI-specific frameworks require recording of inputs (prompts) and
+   outputs (responses).  Explicit requirements are listed as follows:
+
+       +================+==========================================+
+       | Framework      | Requirement                              |
+       +================+==========================================+
+       | EU AI Act Art. | "The input data for which the search has |
+       | 12(3)(c)       | led to a match"                          |
+       +----------------+------------------------------------------+
+       | PCI DSS AI     | "Logging should be sufficient to audit   |
+       | Guidance       | the prompt inputs and reasoning process" |
+       +----------------+------------------------------------------+
+       | ETSI TS 104223 | "Operation, and lifecycle management of  |
+       | 5.1.2-3        | models, datasets and prompts"            |
+       +----------------+------------------------------------------+
+       | FFIEC VII.D    | "Lack of explainability...unclear how    |
+       |                | inputs are translated into outputs"      |
+       +----------------+------------------------------------------+
+
+                                  Table 15
+
+   Mapping to this specification:
+
+   *  text Dialog Object contributed by the user: User/system input
+      (prompt)
+
+   *  text Dialog Object contributed by the agent: Model response
+
+   *  tool-call Event Object input: Tool invocation parameters
+
+   *  tool-result Event Object output: Tool execution results
+
+   *  reasoning Event Object content: Chain-of-thought (where available)
+
+A.2.6.  REQ-6: Retention Period Requirements
+
+   Most frameworks specify minimum retention periods for audit logs.
+   Explicit requirements are listed as follows:
+
+    +===================+============================================+
+    | Framework         | Minimum Retention                          |
+    +===================+============================================+
+    | EU AI Act Art. 19 | 6 months (longer for financial services)   |
+    +-------------------+--------------------------------------------+
+    | FedRAMP (M-21-31) | 12 months active + 18 months cold storage  |
+    +-------------------+--------------------------------------------+
+    | PCI DSS 4.0       | 12 months total, 3 months immediate access |
+    +-------------------+--------------------------------------------+
+    | NIS2              | Per member state law                       |
+    +-------------------+--------------------------------------------+
+
+                                 Table 16
+
+   Recommendation: Implementations SHOULD retain verifiable agent
+   conversation records for at least 12 months to satisfy the most
+   common requirement threshold.
+
+A.2.7.  REQ-7: Tamper-Evidence and Integrity Protection
+
+   All frameworks require some protection against unauthorized
+   modification of logs.  Explicit requirements are listed as follows:
+
+       +======================+===================================+
+       | Framework            | Requirement                       |
+       +======================+===================================+
+       | PCI DSS 4.0 Req 10.5 | "Tamper-proof audit trails...logs |
+       |                      | cannot be altered retroactively"  |
+       +----------------------+-----------------------------------+
+       | FedRAMP              | "Effective chain of evidence to   |
+       |                      | ensure integrity"                 |
+       +----------------------+-----------------------------------+
+       | SOC 2                | Log integrity as security control |
+       +----------------------+-----------------------------------+
+       | CRA                  | "Tamper-proof SBOMs and           |
+       |                      | vulnerability disclosures"        |
+       +----------------------+-----------------------------------+
+
+                                 Table 17
+
+   Mapping to this specification: The signed form of a vCon and the
+   signed-agent-record type (COSE_Sign1 envelope, Appendix B) provide
+   cryptographic integrity protection.  The content-hash field in trace-
+   metadata enables verification of payload integrity.
+
+A.2.8.  REQ-8: Incident Response Support
+
+   All frameworks require some logs to support incident investigation
+   and response.  Explicit requirements are listed as follows:
+
+   +================+==================================================+
+   | Framework      | Requirement                                      |
+   +================+==================================================+
+   | NIS2 Art. 23   | 24-hour initial notification,                    |
+   |                | 72-hour assessment                               |
+   +----------------+--------------------------------------------------+
+   | CRA            | 24-hour vulnerability notification               |
+   |                | to ENISA                                         |
+   +----------------+--------------------------------------------------+
+   | ETSI TS 104223 | Logs for "incident investigations,               |
+   | 5.4.2-1        | and vulnerability remediation"                   |
+   +----------------+--------------------------------------------------+
+   | FedRAMP        | Incident reporting and continuous                |
+   |                | monitoring                                       |
+   +----------------+--------------------------------------------------+
+
+                                  Table 18
+
+   Mapping to this specification: The structured format enables rapid
+   extraction of relevant entries by timestamp range, event type, or
+   tool invocation for incident reconstruction.
+
+A.2.9.  REQ-9: Anomaly and Risk Detection Support
+
+   All frameworks require some logs to enable detection of anomalous or
+   risky behavior.  Explicit requirements are listed as follows:
+
+     +=========================+====================================+
+     | Framework               | Requirement                        |
+     +=========================+====================================+
+     | EU AI Act Art. 12(2)(a) | "Identifying situations that may   |
+     |                         | result in...risk"                  |
+     +-------------------------+------------------------------------+
+     | ETSI TS 104223 5.4.2-2  | "Detect anomalies, security        |
+     |                         | breaches, or unexpected behaviour" |
+     +-------------------------+------------------------------------+
+     | FedRAMP SI-4            | "Anomaly detection"                |
+     +-------------------------+------------------------------------+
+     | SOC 2                   | "Anomaly detection" for security   |
+     |                         | monitoring                         |
+     +-------------------------+------------------------------------+
+
+                                 Table 19
+
+   Mapping to this specification: The standardized entry types and
+   structured tool-call/tool-result pairs enable automated analysis for
+   detecting:
+
+   *  Unusual tool invocation patterns
+
+   *  Failed operations (via status and is_error fields)
+
+   *  Unexpected reasoning patterns
+
+   *  Token usage anomalies
+
+A.2.10.  REQ-10: Human Oversight Enablement
+
+   All AI-specific frameworks require logs to support human review and
+   oversight.  Explicit requirements are listed as follows:
+
+   +======================+============================================+
+   | Framework            | Requirement                                |
+   +======================+============================================+
+   | EU AI Act Art.       | "Monitoring the operation of high-risk AI  |
+   | 26(5)                | systems"                                   |
+   +----------------------+--------------------------------------------+
+   | ETSI TS 104223       | "Capabilities to enable human oversight"   |
+   | 5.1.4-1              |                                            |
+   +----------------------+--------------------------------------------+
+   | ISO 42001            | Human responsibility and accountability    |
+   +----------------------+--------------------------------------------+
+   | FFIEC VII.D          | "Dynamic updating...challenges to          |
+   |                      | monitoring and independently reviewing AI" |
+   +----------------------+--------------------------------------------+
+
+                                  Table 20
+
+   Mapping to this specification: The reasoning Event Object type
+   captures chain-of-thought content (where available), enabling human
+   reviewers to understand AI decision-making processes.  The entry_id
+   and parent_id fields and the hierarchy of Session Objects preserve
+   conversation structure.
+
+A.2.11.  REQ-11: Traceability and Reproducibility
+
+   All frameworks require some ability to trace system behavior and
+   reconstruct events.  Explicit requirements are listed as follows:
+
+    +===========+====================================================+
+    | Framework | Requirement                                        |
+    +===========+====================================================+
+    | EU AI Act | "Level of traceability of the                      |
+    | Art. 12   | functioning...appropriate to the intended purpose" |
+    +-----------+----------------------------------------------------+
+    | ISO 42001 | "Traceability" as key factor including "data       |
+    |           | provenance, model traceability"                    |
+    +-----------+----------------------------------------------------+
+    | CRA       | "Traceability in the software supply chain"        |
+    +-----------+----------------------------------------------------+
+    | ETSI TS   | "Track, authenticate, manage version control"      |
+    | 104223    |                                                    |
+    | 5.2.1-2   |                                                    |
+    +-----------+----------------------------------------------------+
+
+                                 Table 21
+
+   Mapping to this specification:
+
+   *  Session Object and agent_session_id: Links entries to sessions
+
+   *  entry_id and parent_id: Enables conversation tree reconstruction
+
+   *  vcs_context: Git commit/branch for code state
+
+   *  agent_meta: Model version and CLI version
+
+   *  file_attribution: Code provenance tracking
+
+A.3.  Framework-Specific Requirements
+
+A.3.1.  EU AI Act (High-Risk Systems)
+
+   For AI systems classified as high-risk under Annex III of the EU AI
+   Act [EU_AI_ACT_2024], additional requirements apply:
+
+   1.  Biometric identification systems (Annex III, 1(a)) require
+       logging of:
+
+       *  Precise timestamps for start/end of each usage session
+
+       *  Reference database used during input data validation
+
+       *  Input data leading to matches
+
+       *  Natural persons involved in result verification
+
+   2.  Log retention: Minimum 6 months; financial services may require
+       longer per sector-specific regulation.
+
+   3.  Authority Access: Art. 19 of [EU_AI_ACT_2024] requires provision
+       of logs to competent authorities upon reasoned request.
+
+A.3.2.  ETSI TS 104 223 Session Logging Requirements
+
+   ETSI TS 104 223 [ETSI_TS_104223_2025] provides the most detailed AI-
+   specific logging requirements:
+
+    +===========+=================================+===================+
+    | Provision | Requirement                     | This Spec Mapping |
+    +===========+=================================+===================+
+    | 5.1.2-3   | Audit trail for "operation, and | Session Object,   |
+    |           | lifecycle management of models, | agent_meta        |
+    |           | datasets and prompts"           |                   |
+    +-----------+---------------------------------+-------------------+
+    | 5.2.4-1   | "Document and maintain a clear  | recording_agent,  |
+    |           | audit trail of their system     | open maps         |
+    |           | design"                         |                   |
+    +-----------+---------------------------------+-------------------+
+    | 5.2.4-3   | "Audit log of changes to system | system-event      |
+    |           | prompts or other model          | Event Object with |
+    |           | configuration"                  | prompt changes    |
+    +-----------+---------------------------------+-------------------+
+    | 5.4.2-1   | "Log system and user actions to | Dialog Objects    |
+    |           | support security compliance,    | and Event Objects |
+    |           | incident investigations"        |                   |
+    +-----------+---------------------------------+-------------------+
+    | 5.4.2-2   | "Analyse their logs to          | Structured format |
+    |           | ensure...desired outputs and to | enables analysis  |
+    |           | detect anomalies"               |                   |
+    +-----------+---------------------------------+-------------------+
+    | 5.4.2-3   | "Monitor internal states of     | reasoning Event   |
+    |           | their AI systems"               | Object,           |
+    |           |                                 | token_usage       |
+    +-----------+---------------------------------+-------------------+
+
+                                  Table 22
+
+A.3.3.  PCI DSS AI-Specific Guidance
+
+   The PCI Security Standards Council has published guidance on AI in
+   payment environments [PCI_DSS_V4_0_1]: "Where possible, logging
+   should be sufficient to audit the prompt inputs and reasoning process
+   used by the AI system that led to the output provided."
+
+   This specification directly addresses this requirement through:
+
+   *  text Dialog Object contributed by the user: Captures prompt inputs
+
+   *  reasoning Event Object: Captures chain-of-thought (where
+      available)
+
+   *  text Dialog Object contributed by the agent: Captures model
+      outputs
+
+   *  tool-call / tool-result Event Objects: Captures agentic actions
+
+A.3.4.  Financial Sector Requirements (FFIEC, BSI)
+
+   Financial institutions face additional scrutiny for AI systems per
+   [FFIEC_IT_HANDBOOK_2024] and [BSI_AI_FINANCE_2024]:
+
+    +================+===========================+===================+
+    | Requirement    | FFIEC                     | BSI AI Finance    |
+    | Area           |                           |                   |
+    +================+===========================+===================+
+    | Explainability | "Lack of transparency or  | Test criteria for |
+    |                | explainability" risk      | explainability    |
+    +----------------+---------------------------+-------------------+
+    | Dynamic        | "Challenges to monitoring | Continuous        |
+    | updating       | and independently         | validation        |
+    |                | reviewing AI"             |                   |
+    +----------------+---------------------------+-------------------+
+    | Audit trail    | Log management (VI.B.7)   | Complete audit    |
+    |                |                           | trail             |
+    +----------------+---------------------------+-------------------+
+
+                                 Table 23
+
+A.4.  Compliance Mapping Table
+
+   The following table maps this specification's data elements to
+   compliance requirements:
+
+   +================+========+=========+=====+=======+=====+=======+====+
+   |Data Element    |EU AI   |ETSI     |SOC 2|FedRAMP|PCI  |ISO    |NIS2|
+   |                |Act     |104223   |     |       |DSS  |42001  |    |
+   +================+========+=========+=====+=======+=====+=======+====+
+   |start / time    |Art.    |5.4.2-1  |CC7.2|AU-8   |10.6 |A.6.2.8|Art.|
+   |                |12(2)   |         |     |       |     |       |23  |
+   +----------------+--------+---------+-----+-------+-----+-------+----+
+   |agent_session_id|Art. 12 |5.2.4-1  |CC7.2|AU-3   |10.2 |A.6.2.8|-   |
+   +----------------+--------+---------+-----+-------+-----+-------+----+
+   |type            |Art.    |5.4.2-1  |CC7.2|AU-3   |10.2 |A.6.2.8|-   |
+   |                |12(2)   |         |     |       |     |       |    |
+   +----------------+--------+---------+-----+-------+-----+-------+----+
+   |contributor     |Art.    |5.1.4    |CC6.1|AC-2   |10.2 |A.6.2.8|-   |
+   |                |12(3)(d)|         |     |       |     |       |    |
+   +----------------+--------+---------+-----+-------+-----+-------+----+
+   |Dialog Content  |Art.    |5.1.2-3  |-    |-      |AI   |-      |-   |
+   |                |12(3)(c)|         |     |       |Guide|       |    |
+   +----------------+--------+---------+-----+-------+-----+-------+----+
+   |reasoning       |Art. 12 |5.4.2-3  |-    |-      |AI   |A.7.1  |-   |
+   |                |        |         |     |       |Guide|       |    |
+   +----------------+--------+---------+-----+-------+-----+-------+----+
+   |tool-call /     |Art. 12 |5.4.2-1  |CC7.2|AU-12  |10.2 |A.6.2.8|-   |
+   |tool-result     |        |         |     |       |     |       |    |
+   +----------------+--------+---------+-----+-------+-----+-------+----+
+   |signed-agent-   |Art. 19 |5.2.4-1.2|CC6.1|AU-9   |10.5 |-      |-   |
+   |record          |        |         |     |       |     |       |    |
+   +----------------+--------+---------+-----+-------+-----+-------+----+
+   |vcs_context     |-       |5.2.1-2  |-    |CM-3   |-    |A.6.2.8|-   |
+   +----------------+--------+---------+-----+-------+-----+-------+----+
+   |token_usage     |-       |5.4.2-4  |-    |-      |-    |-      |-   |
+   +----------------+--------+---------+-----+-------+-----+-------+----+
+
+                                  Table 24
+
+A.5.  Security Requirements addressing Regulatory Compliance
+
+A.5.1.  Log Integrity
+
+   Per PCI DSS [PCI_DSS_V4_0_1] Req 10.5 and FedRAMP [NIST_SP_800_53_R5]
+   AU-9, logs MUST be protected against modification.  Implementations
+   SHOULD:
+
+   1.  Use the signed form of the vCon or the signed-agent-record
+       envelope (Appendix B) for cryptographic integrity
+
+   2.  Store the content-hash for offline verification
+
+   3.  Implement write-once storage for log archives
+
+A.5.2.  Access Control
+
+   Per FedRAMP [NIST_SP_800_53_R5] AC-3 and ETSI [ETSI_TS_104223_2025]
+   5.2.2-1, access to logs MUST be controlled:
+
+   1.  Logs containing sensitive prompts or outputs require access
+       control
+
+   2.  Reasoning content may contain confidential information
+
+   3.  Authority access (EU AI Act Art. 19) requires audit of log access
+       itself
+
+A.5.3.  Data Protection
+
+   Logs may contain personal data subject to GDPR/privacy regulations:
+
+   1.  Dialog Content of text Dialog Objects may contain PII
+
+   2.  output of tool-result Event Objects may contain query results
+       with PII
+
+   3.  Retention periods must balance compliance requirements with data
+       minimization
+
+A.6.  Related Standards and Emerging Work
+
+   The ISO/IEC JTC 1/SC 42 committee is developing [ISO_IEC_DIS_24970],
+   a draft international standard specifically addressing AI system
+   logging requirements.  This work aligns with and complements the
+   verifiable agent conversation format defined in this document.
+
+   Research on emergent misalignment [EMERGENT_MISALIGNMENT_2025]
+   demonstrates that narrow fine-tuning can produce broadly misaligned
+   LLMs, underscoring the importance of comprehensive conversation
+   logging for detecting behavioral anomalies that may not be apparent
+   from individual interactions.
+
+Appendix B.  Application of SCITT and COSE for Transparency and
+             Authenticity
+
+   The signed form of a vCon [VCON-CORE] uses JWS.  This appendix
+   describes a signing envelope that provides cryptographic integrity
+   protection for vCons that carry agent conversation records using
+   COSE_Sign1 ([STD96]), which is encoded in CBOR [STD94].  The vCon is
+   the payload of the envelope, and the content type header parameter
+   carries the media type "application/vcon" defined in [VCON-CORE].
+   This makes a signed agent record a Signed Statement that can be
+   registered with a SCITT Transparency Service [RFC9943].  No extension
+   point of the vCon schema is used by the envelope.  The reader is
+   assumed to be familiar with the vocabulary and concepts defined in
+   [RFC9334] and [RFC9943].
+
+   Editor's Note:  The use of COSE and SCITT for vCons is expected to
+      progress together with the SCITT related vCon work.
+
+   The collated CDDL definition for the envelope is specified as
+   follows:
+
+   =============== NOTE: '\' line wrapping per RFC 8792 ================
+
+   signed-agent-record = #6.18([           ; COSE_Sign1 tag
+       protected: bstr .cbor protected-header ; {alg, content-type, \
+                                                            scitt-stuff}
+       unprotected: unprotected-header     ; Trace metadata
+       payload: bstr / null                ; Detached if null
+       signature: bstr
+   ])
+
+   protected-header = {
+     &(CWT_Claims: 15) => CWT_Claims
+     ? &(alg: 1) => int
+     ? &(content_type: 3) => tstr / uint
+     ? &(kid: 4) => bstr
+     ? &(x5t: 34) => COSE_CertHash
+     ? &(x5chain: 33) => COSE_X509
+     * label => any
+   }
+
+   CWT_Claims = {
+     &(iss: 1) => tstr
+     &(sub: 2) => tstr
+     * label => any
+   }
+
+   unprotected-header = {
+     ? &(trace-metadata-key: 100) => trace-metadata ; 100 is placeholder
+     ? &(x5chain: 33) => COSE_X509
+     ? &(receipts: 394)  => [ + Receipt ]
+     * label => any
+   }
+
+   trace-metadata = {
+       session-id: session-id
+       agent-vendor: tstr
+       trace-format: trace-format-id
+       timestamp-start: abstract-timestamp
+       ? timestamp-end: abstract-timestamp
+       ? content-hash: tstr                ; SHA-256 hex digest of \
+                                                                 payload
+       ? content-hash-alg: tstr
+   }
+
+   ; Known values: "ietf-vac-v3.0" (canonical), "claude-jsonl", "gemini\
+                                                                 -json",
+   ; "codex-jsonl", "opencode-json", "cursor-jsonl". Extensible via \
+                                                                   tstr.
+   trace-format-id = tstr
+
+   COSE_X509 = bstr / [ 2*certs: bstr ]
+   COSE_CertHash = [ hashAlg: (int / tstr), hashValue: bstr ]
+   label = int / tstr
+
+   ; COSE Receipt CDDL for use in SCITT compliant COSE Envelope
+
+   Receipt = #6.18(COSE_Sign1)
+
+   cose-label = int / tstr
+   cose-value = any
+
+   Protected_Header = {
+     * cose-label => cose-value
+   }
+
+   Unprotected_Header = {
+     &(receipts: 394)  => [+ bstr .cbor Receipt]
+     * cose-label => cose-value
+   }
+
+   COSE_Sign1 = [
+     protected   : bstr .cbor Protected_Header,
+     unprotected : Unprotected_Header,
+     payload     : bstr / null,
+     signature   : bstr
+   ]
+
+
+
+   ; SCITT-interoperable COSE Envelope
+   ; including from draft-ietf-cose-merkle-tree-proofs and
+   ; draft-ietf-scitt-architecture for validation
+
+   ; RFC 3339 string OR epoch milliseconds (for interop).
+   abstract-timestamp = tstr .regexp date-time-regexp / uint
+
+   ; Opaque string: UUID, SHA-256 hash in base64url, etc.
+   session-id = tstr / bstr
+
+   ; RFC 3339 date-time pattern
+   date-time-regexp = "([0-9]{4})-(0[1-9]|1[0-2])-(0[1-9]|[12][0-9]|3[\
+   01])T([01][0-9]|2[0-3]):([0-5][0-9]):(60|[0-5][0-9])([.][0-9]+)?(Z|[\
+                                      +-]([01][0-9]|2[0-3]):[0-5][0-9])"
+
+            Figure 7: CDDL for the Signed Agent Record Envelope
+
+B.1.  The signed-agent-record Structure
+
+   A signed-agent-record is a COSE_Sign1 envelope (CBOR Tag 18) that
+   wraps a vCon with a cryptographic signature.  Signing provides data
+   provenance and tamper evidence, satisfying some requirements of RATS
+   Evidence generation ([RFC9334]) and SCITT auditability ([RFC9943])
+   requirements.  The payload may be included or detached (null); in
+   detached mode, the vCon is supplied separately during verification.
+
+   The following describes each element of this structure.
+
+   protected:  The serialized protected header containing the algorithm
+      identifier, content type, and CWT claims [RFC9597].
+
+   unprotected:  The unprotected header carrying trace metadata at label
+      100 and, after registration, the receipts [RFC9942] of a SCITT
+      Transparency Service.
+
+   payload:  The serialized vCon bytes, or null for detached payloads.
+
+   signature:  The cryptographic signature over the protected header and
+      payload.
+
+   The x5chain and x5t header parameters are defined in [RFC9360].
+
+B.2.  The trace-metadata Map
+
+   The trace-metadata type carries summary information about the signed
+   record in the COSE_Sign1 unprotected header.  This enables consumers
+   to inspect key properties of a signed record without deserializing
+   the full payload.
+
+   The following describes each member of this map.
+
+   session-id:  The session identifier from the signed record.
+
+   agent-vendor:  The agent provider name (e.g., "anthropic", "google").
+
+   trace-format:  Identifies the format of the signed payload (e.g.,
+      "ietf-vac-v3.0" for canonical records).
+
+   timestamp-start:  When the session began.
+
+   timestamp-end:  When the session ended.
+
+   content-hash:  SHA-256 hex digest of the payload bytes, enabling
+      integrity checking independent of the COSE signature.
+
+   content-hash-alg:  The hash algorithm used (default: "sha-256").
+
+   Editor's Note:  The label 100 for trace-metadata is a placeholder.  A
+      COSE Header Parameter registration is for further discussion.
+
+Appendix C.  Mapping of Verifiable Agent Conversation Record Data Items
+
+   The following table maps the data items of [VACR] to their
+   representation in this document.
+
+   +=========================+=======================+================+
+   | VACR data item          | vCon representation   | Extension      |
+   |                         |                       | point          |
+   +=========================+=======================+================+
+   | verifiable-agent-record | vCon Object           | (core)         |
+   +-------------------------+-----------------------+----------------+
+   | version                 | extensions parameter, | (core)         |
+   |                         | "ai_agent"            |                |
+   +-------------------------+-----------------------+----------------+
+   | id                      | uuid parameter        | (core)         |
+   +-------------------------+-----------------------+----------------+
+   | created                 | created_at parameter  | (core)         |
+   +-------------------------+-----------------------+----------------+
+   | recording-agent         | recording_agent       | vcon-ext       |
+   |                         | parameter             |                |
+   +-------------------------+-----------------------+----------------+
+   | vcs                     | vcs parameter         | vcon-ext       |
+   +-------------------------+-----------------------+----------------+
+   | file-attribution        | file_attribution      | vcon-ext       |
+   |                         | parameter             |                |
+   +-------------------------+-----------------------+----------------+
+   | session-trace           | Session Object        | (core)         |
+   +-------------------------+-----------------------+----------------+
+   | session-id              | agent_session_id      | session-ext    |
+   |                         | parameter             |                |
+   +-------------------------+-----------------------+----------------+
+   | format                  | format parameter      | session-ext    |
+   +-------------------------+-----------------------+----------------+
+   | session-start           | start parameter       | (core)         |
+   +-------------------------+-----------------------+----------------+
+   | session-end             | duration parameter    | (core)         |
+   +-------------------------+-----------------------+----------------+
+   | environment             | environment parameter | session-ext    |
+   +-------------------------+-----------------------+----------------+
+   | agent-meta              | agent_meta parameter  | party-ext      |
+   |                         | of the agent Party    |                |
+   |                         | Object                |                |
+   +-------------------------+-----------------------+----------------+
+   | entries                 | Dialog Objects and    | (core)         |
+   |                         | Event Objects of the  |                |
+   |                         | Session Object        |                |
+   +-------------------------+-----------------------+----------------+
+   | message-entry           | "text" type Dialog    | (core)         |
+   |                         | Object                |                |
+   +-------------------------+-----------------------+----------------+
+   | message-entry model-id  | model_id parameter    | dialog-ext     |
+   +-------------------------+-----------------------+----------------+
+   | token-usage             | token_usage parameter | dialog-ext     |
+   +-------------------------+-----------------------+----------------+
+   | tool-call-entry         | "tool-call" type      | event-type-ext |
+   |                         | Event Object          |                |
+   +-------------------------+-----------------------+----------------+
+   | tool-call-entry name    | tool_name parameter   | event-type-ext |
+   +-------------------------+-----------------------+----------------+
+   | tool-result-entry       | "tool-result" type    | event-type-ext |
+   |                         | Event Object          |                |
+   +-------------------------+-----------------------+----------------+
+   | reasoning-entry         | "reasoning" type      | event-type-ext |
+   |                         | Event Object          |                |
+   +-------------------------+-----------------------+----------------+
+   | event-entry             | "system-event" type   | event-type-ext |
+   |                         | Event Object          |                |
+   +-------------------------+-----------------------+----------------+
+   | timestamp               | start (Dialog Object) | (core)         |
+   |                         | or time (Event        |                |
+   |                         | Object) parameter     |                |
+   +-------------------------+-----------------------+----------------+
+   | id, parent-id           | entry_id, parent_id   | dialog-ext,    |
+   |                         | parameters            | event-type-ext |
+   +-------------------------+-----------------------+----------------+
+   | children                | parent_id parameter   | dialog-ext,    |
+   |                         | of the nested entries | event-type-ext |
+   +-------------------------+-----------------------+----------------+
+   | abstract-timestamp      | Date ([VCON-CORE])    | (core)         |
+   +-------------------------+-----------------------+----------------+
+   | signed-agent-record     | Appendix B            | (none)         |
+   +-------------------------+-----------------------+----------------+
+   | trace-metadata          | Appendix B            | (none)         |
+   +-------------------------+-----------------------+----------------+
+
+                   Table 25: Mapping of VACR Data Items
+
+   All other member names of [VACR] are converted from kebab-case to
+   snake_case, as required by [VCON-CORE].  The CDDL in Appendix B is
+   not part of the vCon schema and is used as in [VACR].  The media type
+   "application/agent-conversation", the CoAP Content-Format, and the
+   CBOR Tag requested by [VACR] are not needed, as a vCon uses the media
+   type "application/vcon".
+
+   Editor's Note:  The Event Object of [VCON-CORE] requires the time
+      parameter, while the timestamp of an entry in [VACR] is optional.
+      The epoch milliseconds form of abstract-timestamp is not supported
+      by the Date type of [VCON-CORE].
+
+Appendix D.  Example vCons
+
+   The following (artificailly created) example is an unsigned vCon of a
+   short coding agent session.  A user asks a question, the agent
+   reasons, reads a file using a tool, and answers.
+
+   {
+     "uuid": "01928e10-193e-8231-b9a2-079d3c1a8b5e",
+     "created_at": "2026-10-26T14:02:11Z",
+     "extensions": ["ai_agent"],
+     "recording_agent": {
+       "name": "example-recorder",
+       "version": "0.1.0"
+     },
+     "vcs": {
+       "type": "git",
+       "revision": "4f2a9c1",
+       "branch": "main",
+       "repository": "https://git.example.com/project.git"
+     },
+     "parties": [
+       {
+         "name": "Alice",
+         "type": "person"
+       },
+       {
+         "name": "Coding Agent",
+         "type": "bot",
+         "agent_meta": {
+           "model_id": "example-model-2026-10",
+           "model_provider": "example-provider",
+           "cli_name": "example-cli",
+           "cli_version": "1.2.0"
+         }
+       }
+     ],
+     "sessions": [
+       {
+         "start": "2026-10-26T14:00:00Z",
+         "duration": 95,
+         "parties": [0, 1],
+         "dialog": [0, 1],
+         "agent_session_id": "8d1f6c2e-5a77-4c1e-9d4b-2f3a6b7c8d9e",
+         "format": "interactive",
+         "environment": {
+           "working_dir": "/home/alice/project",
+           "vcs": {
+             "type": "git",
+             "revision": "4f2a9c1",
+             "branch": "main"
+           }
+         }
+       }
+     ],
+     "dialog": [
+       {
+         "type": "text",
+         "start": "2026-10-26T14:00:05Z",
+         "parties": 0,
+         "mediatype": "text/plain",
+         "encoding": "none",
+         "body": "What does the function compute_rate do?",
+         "entry_id": "e1"
+       },
+       {
+         "type": "text",
+         "start": "2026-10-26T14:01:30Z",
+         "parties": 1,
+         "mediatype": "text/plain",
+         "encoding": "none",
+         "body": "It computes the interest rate via a database lookup.",
+         "model_id": "example-model-2026-10",
+         "token_usage": {
+           "input": 1834,
+           "output": 212,
+           "total": 2046
+         },
+         "entry_id": "e5",
+         "parent_id": "e1"
+       }
+     ],
+     "events": [
+       {
+         "type": "reasoning",
+         "time": "2026-10-26T14:00:07Z",
+         "session": 0,
+         "party": 1,
+         "content": "Read the source of compute_rate first.",
+         "entry_id": "e2",
+         "parent_id": "e1"
+       },
+       {
+         "type": "tool-call",
+         "time": "2026-10-26T14:00:09Z",
+         "session": 0,
+         "party": 1,
+         "tool_name": "Read",
+         "input": {"file_path": "src/rate.py"},
+         "call_id": "call-1",
+         "entry_id": "e3",
+         "parent_id": "e1"
+       },
+       {
+         "type": "tool-result",
+         "time": "2026-10-26T14:00:10Z",
+         "session": 0,
+         "party": 1,
+         "output": "def compute_rate(user): ...",
+         "call_id": "call-1",
+         "status": "success",
+         "is_error": false,
+         "entry_id": "e4",
+         "parent_id": "e3"
+       },
+       {
+         "type": "system-event",
+         "time": "2026-10-26T14:01:35Z",
+         "session": 0,
+         "party": 1,
+         "event_type": "session-end"
+       }
+     ]
+   }
+
+                Figure 8: Example vCon with an Agent Session
+
+Appendix E.  CDDL for the ai_agent Extension
+
+   This appendix provides a [CDDL] definition for the parameters defined
+   by the ai_agent extension.  The text in the preceding sections of
+   this document defines the normative definition of these parameters.
+   If the CDDL provided below differs from that in the text of the
+   preceding sections, the text is the definitive definition and the
+   CDDL below is to be considered incorrect.
+
+   This CDDL extends the vcon-ext, party-ext, session-ext, dialog-ext,
+   and event-type-ext sockets of the vCon CDDL of [VCON-CORE].  It is to
+   be used together with the vCon CDDL, which comes first so that its
+   first rule is the root of the combined definition.  The fragments
+   below are the same ones that are included in the preceding sections,
+   in the order in which they are included by the main CDDL file of this
+   extension, which starts with the root rule "vcon-with-ai-agent =
+   vcon" and includes the vCon CDDL first.
+
+   $$vcon-ext //= ( recording_agent: recording_agent_type )
+   $$vcon-ext //= ( vcs: vcs_context_type )
+   $$vcon-ext //= ( file_attribution: file_attribution_type )
+
+   ; Recording_Agent Object
+   recording_agent_type = {
+       name: tstr,
+       ? version: tstr,
+       * tstr => any
+     }
+
+   ; File_Attribution Object
+   file_attribution_type = {
+       files: [* file_type],
+       * $$file-attribution-ext
+     }
+
+   ; File Object
+   file_type = {
+       ; relative path from the repository root
+       path: tstr,
+       conversations: [* file_conversation_type],
+       * $$file-ext
+     }
+
+   ; File_Conversation Object
+   file_conversation_type = {
+       ? url: uri_type,
+       ; default contributor for all ranges
+       ? contributor: contributor_type,
+       ranges: [* range_type],
+       ? related: [* resource_type],
+       * $$file-conversation-ext
+     }
+
+   ; Range Object
+   range_type = {
+       ; 1-indexed
+       start_line: uint,
+       ; 1-indexed, inclusive
+       end_line: uint,
+       ? content_hash: tstr,
+       ; default: "sha-256"
+       ? content_hash_alg: tstr,
+       ; overrides the conversation level contributor
+       ? contributor: contributor_type,
+       * $$range-ext
+     }
+
+   ; Contributor Object
+   contributor_type = {
+       type: "human" / "ai" / "mixed" / "unknown",
+       ? model_id: tstr,
+       * $$contributor-ext
+     }
+
+   ; Resource Object
+   resource_type = {
+       type: tstr,
+       url: uri_type,
+       * $$resource-ext
+     }
+
+   ; URI (RFC 3986)
+   uri_type = tstr .regexp
+       "(([^:/?#]+):)?(//([^/?#]*))?([^?#]*)(\\?([^#]*))?(#(.*))?"
+
+   $$party-ext //= ( agent_meta: agent_meta_type )
+
+   ; Agent_Meta Object
+   agent_meta_type = {
+       ; e.g., "claude-opus-4-5-20251101"
+       model_id: tstr,
+       ; e.g., "anthropic", "google"
+       model_provider: tstr,
+       ; all models (multi-model sessions)
+       ? models: [* tstr],
+       ; e.g., "claude-code", "gemini-cli"
+       ? cli_name: tstr,
+       ? cli_version: tstr,
+       * tstr => any
+     }
+
+   $$session-ext //= ( agent_session_id: tstr )
+   ; "interactive" / "autonomous" / vendor specific
+   $$session-ext //= ( format: tstr )
+   $$session-ext //= ( environment: environment_type )
+
+   ; Environment Object
+   environment_type = {
+       working_dir: tstr,
+       ? vcs: vcs_context_type,
+       ; sandbox mount paths
+       ? sandboxes: [* tstr],
+       * tstr => any
+     }
+
+   $$dialog-ext //= ( model_id: tstr )
+   $$dialog-ext //= ( token_usage: token_usage_type )
+   $$dialog-ext //= ( entry_id: agent_entry_id_type )
+   $$dialog-ext //= ( parent_id: agent_entry_id_type )
+
+   ; Token_Usage Object
+   token_usage_type = {
+       ; input tokens
+       ? input: uint,
+       ; output tokens
+       ? output: uint,
+       ; cached input tokens
+       ? cached: uint,
+       ; reasoning or thinking tokens
+       ? reasoning: uint,
+       ; total tokens
+       ? total: uint,
+       ; monetary cost in US dollars
+       ? cost: number,
+       * tstr => any
+     }
+
+   $$event-type-ext //= (event_tool_call_type,)
+   $$event-type-ext //= (event_tool_result_type,)
+   $$event-type-ext //= (event_reasoning_type,)
+   $$event-type-ext //= (event_system_event_type,)
+
+   ; "tool-call" type Event Object
+   event_tool_call_type = (
+       type: "tool-call",
+       event_common_type,
+       ; e.g., "Bash", "Edit", "Read"
+       tool_name: tstr,
+       ; tool arguments
+       input: any,
+       ; links call and result
+       ? call_id: tstr,
+       agent_entry_reference_type,
+       * $$tool-call-event-ext
+     )
+
+   ; "tool-result" type Event Object
+   event_tool_result_type = (
+       type: "tool-result",
+       event_common_type,
+       ; tool output
+       output: any,
+       ; links call and result
+       ? call_id: tstr,
+       ; "success" / "error" / "completed"
+       ? status: tstr,
+       ? is_error: bool,
+       agent_entry_reference_type,
+       * $$tool-result-event-ext
+     )
+
+   ; "reasoning" type Event Object
+   event_reasoning_type = (
+       type: "reasoning",
+       event_common_type,
+       ; plaintext reasoning or structured content
+       content: any,
+       ; provider protected content
+       ? encrypted: tstr,
+       ; topic label
+       ? subject: tstr,
+       agent_entry_reference_type,
+       * $$reasoning-event-ext
+     )
+
+   ; "system-event" type Event Object
+   event_system_event_type = (
+       type: "system-event",
+       event_common_type,
+       ; event classifier
+       event_type: tstr,
+       ; event specific payload
+       ? data: { * tstr => any },
+       agent_entry_reference_type,
+       * $$system-event-ext
+     )
+
+   vcs_context_type = {
+       ; "git" / "jj" / "hg" / "svn"
+       type: tstr,
+       ; commit SHA or change ID
+       ? revision: tstr,
+       ? branch: tstr,
+       ; repository URL
+       ? repository: tstr,
+       * tstr => any
+     }
+
+   ; Reference to an entry of the native agent trace
+   agent_entry_reference_type = (
+       ? entry_id: agent_entry_id_type,
+       ? parent_id: agent_entry_id_type
+     )
+
+   ; Per-entry unique reference within a session
+   agent_entry_id_type = tstr
+
+             Figure 9: Collated CDDL for the ai_agent Extension
+
+   Editor's Note:  A JSON schema for the ai_agent extension will be
+      added.
+
+Acknowledgments
+
+Contributors
+
+   Tobias Heldt
+   XOR
+   Email: tobias@xor.tech
+
+
+   Thomas Fossati
+   NVIDIA
+   Email: tfossati@nvidia.com
+
+
+   Jaime Jimenez
+   Ericsson
+   Email: jaime@iki.fi
+
+
+   Jari Arkko
+   Ericsson
+   Email: jari.arkko@ericsson.com
+
+
+   Samuel Waymouth
+   AWS
+   Email: swaym@amazon.co.uk
+
+
+   Houda Labiod
+   Huawei Technologies France S.A.S.U.
+   Email: houda.labiod@huawei.com
+
+
+Authors' Addresses
+
+   Henk Birkholz
+   Fraunhofer SIT
+   Email: henk.birkholz@ietf.contact
+
+
+   Daniel G Petrie
+   SIPez LLC
+   Email: dan.ietf@sipez.com
+
+
+   Thomas McCarthy-Howe
+   VCONIC
+   Email: ghostofbasho@gmail.com
+
+
+   Jonathan Rosenberg
+   Email: jdrosen@jdrosen.net
+
+
+   Orie Steele
+   Email: orie@or13.io
