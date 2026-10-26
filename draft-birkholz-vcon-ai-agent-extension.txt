@@ -14,7 +14,7 @@ Expires: 29 April 2027                                         SIPez LLC
                                                          26 October 2026
 
 
-      An AI Agent Extension for Virtualized Converstations (vCon)
+       An AI Agent Extension for Virtualized Conversations (vCon)
              draft-birkholz-vcon-ai-agent-extension-latest
 
 Abstract
