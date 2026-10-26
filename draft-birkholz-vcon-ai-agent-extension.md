@@ -1,5 +1,5 @@
 ---
-title: "An AI Agent Extension for Virtualized Converstations (vCon)"
+title: "An AI Agent Extension for Virtualized Conversations (vCon)"
 abbrev: "vCon AI Agent Extension"
 category: std
 
