@@ -1,0 +1,86 @@
+{
+  "magic": "E!vIA5L86J2I",
+  "timestamp": "2026-10-29T04:13:19.441317+00:00",
+  "repo": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
+  "labels": [
+    {
+      "name": "accessibility",
+      "description": "Barrier affecting people with disabilities",
+      "color": "f143ab"
+    },
+    {
+      "name": "bug",
+      "description": "Something isn't working",
+      "color": "d73a4a"
+    },
+    {
+      "name": "documentation",
+      "description": "Improvements or additions to documentation",
+      "color": "0075ca"
+    },
+    {
+      "name": "duplicate",
+      "description": "This issue or pull request already exists",
+      "color": "cfd3d7"
+    },
+    {
+      "name": "enhancement",
+      "description": "New feature or request",
+      "color": "a2eeef"
+    },
+    {
+      "name": "good first issue",
+      "description": "Good for newcomers",
+      "color": "7057ff"
+    },
+    {
+      "name": "help wanted",
+      "description": "Extra attention is needed",
+      "color": "008672"
+    },
+    {
+      "name": "invalid",
+      "description": "This doesn't seem right",
+      "color": "e4e669"
+    },
+    {
+      "name": "question",
+      "description": "Further information is requested",
+      "color": "d876e3"
+    },
+    {
+      "name": "wontfix",
+      "description": "This will not be worked on",
+      "color": "ffffff"
+    }
+  ],
+  "issues": [],
+  "pulls": [
+    {
+      "number": 1,
+      "id": "PR_kwDOVYb3qc8AAAABLX2HmQ",
+      "title": "Abstract and Intro Refocus and clarification",
+      "url": "https://github.com/henkbirkholz/draft-birkholz-vcon-ai-agent-extension/pull/1",
+      "state": "OPEN",
+      "author": "jdrosen",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "I did major wording changes in the abstract and intro, to strengthen the motivation and provide greater clarity. I also removed a few straggler references to the old VACR format that I don't think are needed anymore.",
+      "createdAt": "2026-10-28T21:43:46Z",
+      "updatedAt": "2026-10-28T21:43:46Z",
+      "baseRepository": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
+      "baseRefName": "main",
+      "baseRefOid": "35c126d280f266f446ec6898c8c666cd59b29a69",
+      "headRepository": "jdrosen/draft-birkholz-vcon-ai-agent-extension",
+      "headRefName": "main",
+      "headRefOid": "fbe1bb457c470d698b696964fe1c46767b39d8bc",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    }
+  ]
+}
