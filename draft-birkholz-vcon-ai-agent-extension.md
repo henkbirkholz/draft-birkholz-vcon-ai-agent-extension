@@ -250,7 +250,7 @@ Demonstrating that recorded AI agent behavior truthfully represents actual behav
 
 # Introduction
 
-An AI Agent is a system that performs actions on behalf of a principal in a fully or semi-autonomous fahion. AI Agents are growing rapidly in their adoption across the Internet, finding usage in business, consumer, government and oher applications.
+An AI Agent is a system that performs actions on behalf of a principal in a fully or semi-autonomous fashion. AI Agents are growing rapidly in their adoption across the Internet, finding usage in business, consumer, government and other applications.
 
 Yet, AI agents - like humans - are not infallible. They make mistakes, they misunderstand, and they may even act maliciously. This is creating demand for visibility, auditability, and traceability of AI agent actions. Some examples:
 
