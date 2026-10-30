@@ -423,7 +423,29 @@ name:
 : The name of the recording tool or agent.
 
 version:
-: The version of the recording tool.
+: The version of the recording tool is required because the translation of native data into the canonical data definition can change between versions of the recording tool.
+
+vendor:
+: The organization that provides the recording tool (e.g., "example-vendor").
+
+id:
+: A URI that identifies the recording tool independent of its version.
+  The id SHOULD be a URI under the control of the vendor, so that names of recording tools from different vendors do not collide.
+
+source_format:
+: The native format of the agent data from which this vCon was translated.
+  The values are the same as those of the trace-format member of the trace-metadata map ({{trace-metadata}}), for example "claude-jsonl" or "codex-jsonl".
+  The value "ietf-vac-v3.0" indicates that the agent data was recorded in the canonical format and not translated.
+
+source_format_version:
+: The version of the native format, if the agent implementation versions its format.
+
+A recording_agent parameter is asserted by the producer of the vCon and is not authenticated on its own.
+When a vCon is signed, the signer SHOULD be the recording agent or the operator of the recording agent, so that a Relying Party can compare the recording agent identified by id, or by vendor and name, with the identity of the signer.
+See {{detection-and-trust-boundaries}}.
+
+Editor's Note:
+: An alternative placement for source_format and source_format_version is the Session Object, which would allow a single vCon to carry Agent Sessions that were translated from different native formats.
 
 ### vcs {#vcs}
 
@@ -986,11 +1008,13 @@ The signed form of a vCon and the signed-agent-record envelope alone provide aut
 A signer can claim key compromise or dispute the signing time without independent evidence.
 Non-repudiation requires additional infrastructure such as transparency services {{-scitt-arch}} that provide independent timestamp proof via registration receipts, append-only logs preventing retroactive denial, and third-party witnesses to the signing event.
 
-## Detection and Trust Boundaries
+## Detection and Trust Boundaries {#detection-and-trust-boundaries}
 
 Verifiable agent conversation records primarily enable detection of anomalous behavior rather than prevention.
 Detection requires that records accurately reflect actual agent behavior; an agent that controls its own recording can omit or falsify entries.
 The recording_agent parameter distinguishes the recording tool from the conversing agent, enabling Relying Parties to assess trust in the recording process.
+Because the recording_agent parameter is part of the payload, any producer can claim any recording tool.
+Relying Parties SHOULD NOT base trust decisions on the recording_agent parameter unless the vCon is signed and the identity of the signer corresponds to the recording agent or to an operator known to run it.
 
 Trust boundaries exist between the agent runtime and recording system, between the recording system and storage, between storage and verification, and between verification and decision-making.
 Attacks at any boundary may compromise record integrity or confidentiality.

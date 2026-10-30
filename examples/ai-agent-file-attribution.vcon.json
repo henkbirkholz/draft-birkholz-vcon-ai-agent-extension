@@ -6,7 +6,11 @@
   ],
   "recording_agent": {
     "name": "example-recorder",
-    "version": "0.1.0"
+    "version": "0.1.0",
+    "vendor": "example-vendor",
+    "id": "https://recorder.example.com/example-recorder",
+    "source_format": "example-cli-jsonl",
+    "source_format_version": "2"
   },
   "vcs": {
     "type": "git",
