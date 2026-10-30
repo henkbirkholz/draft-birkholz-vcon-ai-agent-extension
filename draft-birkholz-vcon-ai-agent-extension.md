@@ -242,41 +242,60 @@ entity:
 --- abstract
 
 AI agents that use large language models increasingly perform consequential tasks on behalf of humans and other AI agents.
-Demonstrating that recorded AI agent behavior truthfully represents actual behavior is essential for accountability, compliance, and human oversight. To achieve that goal, this document defines an extension to the Virtualized Conversation (vCon) object format, allowing a vCon to capture a conversation between a human and an AI agent, or between AI Agents. The vCon core format can already capture the back and forth messages (including text and voice) sent by AI agents, but additional extensions are required to fully reproduce the AI agent trajectory, such as agent metadata, message exchanges, tool invocations, reasoning traces, system events, file attribution, etc. This document defines those extensions in both descriptive language and formal CDDL definitions. This draft is a replacement for the former Verifiable Agent Conversation Records specification, which was a standalone format and not an extension of vCon.
-
-
+Demonstrating that recorded AI agent behavior truthfully represents actual behavior is essential for accountability, compliance, and human oversight.
+To achieve that goal, this document defines an extension to the Virtualized Conversation (vCon) object format, allowing a vCon to capture a conversation between a human and an AI agent, or between AI Agents.
+The vCon core format can already capture the back and forth messages (including text and voice) sent by AI agents, but additional extensions are required to fully reproduce the AI agent trajectory, such as agent metadata, message exchanges, tool invocations, reasoning traces, system events, file attribution, etc.
+This document defines those extensions in both descriptive language and formal CDDL definitions.
+This draft is a replacement for the former Verifiable Agent Conversation Records specification, which was a standalone format and not an extension of vCon.
 
 --- middle
 
 # Introduction
 
-An AI Agent is a system that performs actions on behalf of a principal in a fully or semi-autonomous fashion. AI Agents are growing rapidly in their adoption across the Internet, finding usage in business, consumer, government and other applications.
+An AI Agent is a system that performs actions on behalf of a principal in a fully or semi-autonomous fashion.
+AI Agents are growing rapidly in their adoption across the Internet, finding usage in business, consumer, government and other applications.
 
-Yet, AI agents - like humans - are not infallible. They make mistakes, they misunderstand, and they may even act maliciously. This is creating demand for visibility, auditability, and traceability of AI agent actions. Some examples:
+Yet, AI agents - like humans - are not infallible.
+They make mistakes, they misunderstand, and they may even act maliciously.
+This is creating demand for visibility, auditability, and traceability of AI agent actions.
+Some examples:
 
-* An agent authorized to read files might invoke tools to modify production systems or exfiltrate sensitive data beyond its authorization scope. The CISO of the company may need to investigate what happened.
+* An agent authorized to read files might invoke tools to modify production systems or exfiltrate sensitive data beyond its authorization scope.
+  The CISO of the company may need to investigate what happened.
 
-* An agent's visible CoT output might diverge from the reasoning that actually produced its actions, resulting in a loss of revenue that the finance team needs to investigate
+* An agent's visible CoT output might diverge from the reasoning that actually produced its actions, resulting in a loss of revenue that the finance team needs to investigate.
 
-* An agent might deliberately underperform during capability evaluations while performing at full capacity during deployment, causing the IT department to need to consider other vendors
+* An agent might deliberately underperform during capability evaluations while performing at full capacity during deployment, causing the IT department to need to consider other vendors.
 
 * An enterprise making use of an AI agent from another vendor, using it to perform accounting work, may be later audited and need to have supporting documentation on what the AI agent did and why.
 
 * A small business may use an AI agent to manage its inventory, and upon discovering an error, might need a complete trace of what the agent did to determine what went wrong.
 
+These use cases also extend into the legal realm.
+An enterprise using an AI agent for screening job applicants may later get sued by an applicant that was passed up for a role.
+The enterprise might subpoena the AI agent vendor, requesting a full trace of what the AI Agent did, and why.
+Similarly, a governmental body investigating malicious steps taken by an AI Agent, might request a full log of all of the sessions that AI Agent had.
 
-These use cases also extend into the legal realm. An enterprise using an AI agent for screening job applicants may later get sued by an applicant that was passed up for a role. The enterprise might subpoena the AI agent vendor, requesting a full trace of what the AI Agent did, and why. Similarly, a governmental body investigating malicious steps taken by an AI Agent, might request a full log of all of the sessions that AI Agent had.
+In all cases - there is a need to exchange information between organizational domains, and then to process that information to obtain important insights.
+To do this, a standardized object format is required.
+This object format needs to carry the record of the conversation between the principal (typically a user, but potentially an AI Agent), and the AI agent which is acting on its behalf.
+This record needs to contain all of the information needed to answer critical questions - what did it do, when did it do it, how did it do it, and why did it do it?
 
-In all cases - there is a need to exchange information between organizational domains, and then to process that information to obtain important insights. To do this, a standardized object format is required.  This object format needs to carry the record of the conversation between the principal (typically a user, but potentially an AI Agent), and the AI agent which is acting on its behalf. This record needs to contain all of the information needed to answer critical questions - why did it do, when did it do it, how did it do it, and why did it do it?
+This need grows even further in cases where AI Agents themselves begin communicating with other AI agents, which may in turn communicate with further AI agents.
+This will create a web of AI agent interactions.
+Without a standardized format for documenting the actions of each agent, and how they chain together, it will become impossible to satisfy industry needs for tracing, troubleshooting, auditing, reconciliation, and so on.
+If, as some predict, we see as many AI agents accessing the Internet as we have humans accessing it, the need becomes dire.
 
-This need grows even further in cases where AI Agents themselves begin communicating with other AI agents, which may in turn communicate with further AI agents. This will create a web of AI agent interactions. Without a standardized format for documenting the actions of each agent, and how they chain together, it will become impossible to satisfy industry needs for tracing, troubleshooting, auditing, reconciliation, and so on. If, as some predict, we see as many AI agents accessing the Internet as we have humans accessing it, the need becomes dire.
+This specification addresses that need.
 
-This specification addreses that need.
+It does so by building upon the vCon specification {{VCON-CORE}}.
+A vCon is a Virtualized Conversation, which captures the content of any conversation (such as a call, chat, or meeting), along with its meta-data.
+Interactions between users and AI Agents, or between AI Agents, are also conversations, making vCon a natural foundation to build upon.
+vCon however is missing additional information that is important to capture when a participant is an AI Agent.
+Examples include tool calls and their results, token usage, model versions, and so on.
 
-It does so by building upon the vCon specification {{VCON-CORE}}. A vCon is a Virtualized Converation, which captures the content of any conversation (such as a call, chat, or meeting), along with its meta-data. Interactions between users and AI Agents, or between AI Agents, are also conversations, making vCon a natural foundation to build upon. vCon however is missing additional information that is important to capture when a participant is an AI Agent. Examples include tool calls and their results, token usage, model versions, and so on.
-
-This document provides an extension to the core vCon specification, using its established extension points, adding in this missing information. It also provides the CDDL for these extensions, using the defined CDDL {{CDDL}} sockets.
-
+This document provides an extension to the core vCon specification, using its established extension points, adding in this missing information.
+It also provides the CDDL for these extensions, using the defined CDDL {{CDDL}} sockets.
 
 ## Goals
 
@@ -302,16 +321,14 @@ This specification has the following goals:
 
 10. To ensure that records can be authenticated and encrypted, without relying on transport or storage security to provide these capabilities.
 
-
-
 Most agent conversations today are represented in "human-readable" text formats.
-For example, JSON {{JSON}} is considered to be "human-readable" as it can be presented to humans in human-computer-interfaces (HCI) via off-the-shelf tools, e.g., pre-installed text editors that allow such data to be consumed or modified by humans. However, if we wish for these records to be processed by traditional software, a documented format with well-defined syntax and semantics is required. If we further wish for this format to be valid across AI agent vendors, a standard is required.
-
+For example, JSON {{JSON}} is considered to be "human-readable" as it can be presented to humans in human-computer-interfaces (HCI) via off-the-shelf tools, e.g., pre-installed text editors that allow such data to be consumed or modified by humans.
+However, if we wish for these records to be processed by traditional software, a documented format with well-defined syntax and semantics is required.
+If we further wish for this format to be valid across AI agent vendors, a standard is required.
 
 A vCon is a JSON document, and so are the agent conversation records extensions defined in this document.
 The signed and the encrypted forms of a vCon defined in {{VCON-CORE}} apply unchanged.
 The application of COSE {{-cose}} to vCons that carry agent conversation vCon records is described in the SCITT architecture {{scitt-cose}}.
-
 
 ## Transition from Verifiable Agent Conversation Records to a vCon extension
 
@@ -336,7 +353,7 @@ Sections of {{VCON-CORE}} are therefore referenced by name and not by number.
 
 {::boilerplate bcp14-tagged}
 
-In this document, CDDL {{CDDL}} {{RFC9682}} is used to describe the data formats of agent conversations in the JSON form accodring to vCon CDDL definitions.
+In this document, CDDL {{CDDL}} {{RFC9682}} is used to describe the data formats of agent conversations in the JSON form according to vCon CDDL definitions.
 
 ## Terminology
 
@@ -362,7 +379,7 @@ Recording Agent:
 The extension name for this document is "ai_agent".
 
 The string token "ai_agent" SHOULD be included in the extensions parameter of a vCon that contains any of the parameters or Event Object types defined in this document.
-As described in {{compatibility}} and {{incompatibility}}, this extension is intended to be fully interoperable with the vCon definitions and the name "ai_agent" is not inlcuded as a critical parameter.
+As described in {{compatibility}} and {{incompatibility}}, this extension is intended to be fully interoperable with the vCon definitions and the name "ai_agent" is not included as a critical parameter.
 
 # Parameter Definitions
 
@@ -1522,7 +1539,7 @@ The epoch milliseconds form of abstract-timestamp is not supported by the Date t
 
 # Example vCons
 
-The following (artificailly created) example is an unsigned vCon of a short coding agent session.
+The following (artificially created) example is an unsigned vCon of a short coding agent session.
 A user asks a question, the agent reasons, reads a file using a tool, and answers.
 
 ~~~ json
