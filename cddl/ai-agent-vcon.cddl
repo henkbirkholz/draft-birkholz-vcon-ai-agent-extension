@@ -5,7 +5,13 @@ $$vcon-ext //= ( file_attribution: file_attribution_type )
 ; Recording_Agent Object
 recording_agent_type = {
     name: tstr,
-    ? version: tstr,
+    version: tstr,
+    ? vendor: tstr,
+    ? id: uri_type,
+    ; native format the record was translated from,
+    ; same values as trace-format-id
+    ? source_format: tstr,
+    ? source_format_version: tstr,
     * tstr => any
   }
 
