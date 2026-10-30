@@ -78,6 +78,7 @@ informative:
   RFC9682:
   RFC9393:
   RFC6973:
+  PRIVACY-PRIMER: I-D.ietf-vcon-privacy-primer
   STD94:
     -: cbor
     =: RFC8949
@@ -249,33 +250,23 @@ Demonstrating that recorded AI agent behavior truthfully represents actual behav
 --- middle
 
 # Introduction
+An AI agent performs actions on behalf of a principal, either fully or semi-autonomously. Businesses, consumers, governments, and other organizations increasingly use AI agents across the Internet.
 
-An AI Agent is a system that performs actions on behalf of a principal in a fully or semi-autonomous fashion. AI Agents are growing rapidly in their adoption across the Internet, finding usage in business, consumer, government and other applications.
+Like humans, AI agents make mistakes, misunderstand instructions, and may even act maliciously. These risks drive demand for visibility, auditability, and traceability of AI agent actions. For example:
+- A principal might authorize an agent to read files, but the agent might invoke tools to modify production systems or exfiltrate sensitive data beyond its authorization scope. The company's CISO may need to investigate what happened.
+- An agent might produce visible chain-of-thought (CoT) output that diverges from the reasoning that actually produced its actions. If those actions cause a loss of revenue, the finance team may need to investigate.
+- An agent might deliberately underperform during capability evaluations while performing at full capacity during deployment. The IT department may then need to consider other vendors.
+- An enterprise might use another vendor's AI agent to perform accounting work. If auditors later examine that work, the enterprise may need documentation that explains what the agent did and why.
+- A small business might use an AI agent to manage inventory. After discovering an error, the business may need a complete trace of the agent's actions to determine what went wrong.
+Legal proceedings create similar needs. An enterprise might use an AI agent to screen job applicants, and an applicant whom the enterprise rejected might later sue. The enterprise might subpoena the AI agent vendor for a full trace of what the agent did and why. Similarly, a government body investigating an AI agent's malicious actions might request a full log of all the agent's sessions.
 
-Yet, AI agents - like humans - are not infallible. They make mistakes, they misunderstand, and they may even act maliciously. This is creating demand for visibility, auditability, and traceability of AI agent actions. Some examples:
+In each case, organizations need to exchange information across organizational domains and process it to answer questions about the agent's actions. They need a standardized object format that carries a record of the conversation between the principal, typically a user but potentially another AI agent, and the AI agent acting on its behalf. This record needs to contain enough information to answer four questions: What did the agent do, when did it act, how did it act, and why did it act?
 
-* An agent authorized to read files might invoke tools to modify production systems or exfiltrate sensitive data beyond its authorization scope. The CISO of the company may need to investigate what happened.
+The need grows as AI agents communicate with other AI agents, which may in turn communicate with further agents. These exchanges create a web of AI agent interactions. Without a standardized format that documents each agent's actions and links them together, organizations will struggle to trace, troubleshoot, audit, and reconcile those interactions. If AI agents eventually match humans in the number accessing the Internet, as some predict, organizations will face this problem at a much greater scale.
 
-* An agent's visible CoT output might diverge from the reasoning that actually produced its actions, resulting in a loss of revenue that the finance team needs to investigate
+This specification addresses that need by extending the vCon specification {{VCON-CORE}}. A vCon, or Virtualized Conversation, captures the content and metadata of a conversation, such as a call, chat, or meeting. Users and AI agents also conduct conversations, as do AI agents with one another, so vCon provides a natural foundation for recording these interactions. However, the core vCon specification lacks some information that organizations need when a participant is an AI agent, such as tool calls and their results, token usage, and model versions.
 
-* An agent might deliberately underperform during capability evaluations while performing at full capacity during deployment, causing the IT department to need to consider other vendors
-
-* An enterprise making use of an AI agent from another vendor, using it to perform accounting work, may be later audited and need to have supporting documentation on what the AI agent did and why.
-
-* A small business may use an AI agent to manage its inventory, and upon discovering an error, might need a complete trace of what the agent did to determine what went wrong.
-
-
-These use cases also extend into the legal realm. An enterprise using an AI agent for screening job applicants may later get sued by an applicant that was passed up for a role. The enterprise might subpoena the AI agent vendor, requesting a full trace of what the AI Agent did, and why. Similarly, a governmental body investigating malicious steps taken by an AI Agent, might request a full log of all of the sessions that AI Agent had.
-
-In all cases - there is a need to exchange information between organizational domains, and then to process that information to obtain important insights. To do this, a standardized object format is required.  This object format needs to carry the record of the conversation between the principal (typically a user, but potentially an AI Agent), and the AI agent which is acting on its behalf. This record needs to contain all of the information needed to answer critical questions - why did it do, when did it do it, how did it do it, and why did it do it?
-
-This need grows even further in cases where AI Agents themselves begin communicating with other AI agents, which may in turn communicate with further AI agents. This will create a web of AI agent interactions. Without a standardized format for documenting the actions of each agent, and how they chain together, it will become impossible to satisfy industry needs for tracing, troubleshooting, auditing, reconciliation, and so on. If, as some predict, we see as many AI agents accessing the Internet as we have humans accessing it, the need becomes dire.
-
-This specification addreses that need.
-
-It does so by building upon the vCon specification {{VCON-CORE}}. A vCon is a Virtualized Converation, which captures the content of any conversation (such as a call, chat, or meeting), along with its meta-data. Interactions between users and AI Agents, or between AI Agents, are also conversations, making vCon a natural foundation to build upon. vCon however is missing additional information that is important to capture when a participant is an AI Agent. Examples include tool calls and their results, token usage, model versions, and so on.
-
-This document provides an extension to the core vCon specification, using its established extension points, adding in this missing information. It also provides the CDDL for these extensions, using the defined CDDL {{CDDL}} sockets.
+This document uses the core vCon specification's established extension points to add that information. It also defines the extensions in CDDL through the defined CDDL {{CDDL}} sockets.
 
 
 ## Goals
@@ -882,12 +873,28 @@ As described in {{VCON-CORE}}, such a redactor may reject a vCon that lists "ai_
 # Privacy and Integrity Considerations {#privacy}
 
 Verifiable agent conversation records reveal substantial information about agent behavior, system state, and user interactions.
-The privacy considerations of {{RFC6973}} apply.
+The privacy considerations of {{RFC6973}} apply to the protocols that carry these records.
+{{PRIVACY-PRIMER}} describes the privacy concepts that apply to the content of a vCon: the roles of data subjects, controllers, and processors, the rights of data subjects, the categories of personal and sensitive data, and the key privacy principles.
+This section applies those concepts to the parameters and Event Object types defined in this document and does not repeat them.
+
+## Roles in Agent Conversations
+
+{{Section 2.2.1 of PRIVACY-PRIMER}} distinguishes data subjects, data controllers, and data processors.
+An agent conversation typically involves more organizations than a conversation between people: the principal on whose behalf the agent acts, the operator of the agent, the vendor of the agent implementation, the provider of the model, the operator of the recording agent, and the providers of the tools that the agent calls.
+Each of them can receive personal data from the conversation.
+Whether each acts as a controller or a processor depends on the deployment and the applicable law, not on this document.
+
+The data subjects of a record include the principal and also people whose data the agent retrieves or processes through tools.
+Those people do not take part in the conversation and may not know that it is recorded, so the notice and consent mechanisms described in {{Section 2.2.2 of PRIVACY-PRIMER}} rarely reach them.
+
+The Party Objects and the recording_agent parameter ({{recording_agent}}) identify some of the organizations involved.
+Tool providers appear only through the tool_name parameter of "tool-call" type Event Objects.
 
 ## Information Disclosure
 
 User prompts captured in Dialog Objects may contain personal identifiers, business confidential information, credentials inadvertently included in prompts, or behavioral patterns.
 Agent responses and reasoning traces may reveal inference results that expose information about users not explicitly provided, confidential information retrieved by tools, or system architecture details through tool names and parameters.
+{{Section 2.2.3 of PRIVACY-PRIMER}} describes the kinds of data commonly protected as personal data; the content of Dialog Objects and of "tool-call" and "tool-result" type Event Objects can contain any of them.
 Implementations MUST treat user-provided content as potentially containing personally identifiable information.
 
 Record metadata exposes operational details that may have privacy implications.
@@ -896,13 +903,18 @@ Token usage patterns may enable inference about conversation content even when t
 
 ## Sensitive Content in Records
 
-Reasoning entries may contain inferences that constitute special category data, including health-related inferences from user queries, political opinions derived from conversation context, or biometric data processed by AI systems.
+{{Section 2.2.4 of PRIVACY-PRIMER}} describes sensitive data, a subset of personal data that requires stronger protection and often opt-in consent.
+Agent records can contain sensitive data in several places.
+Reasoning entries may contain inferences that constitute sensitive data, including health-related inferences from user queries, political opinions derived from conversation context, or biometric data processed by AI systems.
 The encrypted parameter of the "reasoning" Event Object type reflects that some model providers encrypt chain-of-thought content; when reasoning is encrypted, audit capabilities depend on the provider's cooperation.
 
 Tool inputs and outputs warrant particular attention.
-Tool call inputs may contain credentials, API keys, or file contents.
+Tool call inputs may contain credentials, API keys, or file contents; credentials are sensitive data in many jurisdictions.
 Tool results may contain query results with personal data from databases or external services.
-Implementations SHOULD provide configurable redaction rules for common patterns and support selective entry type recording based on deployment requirements.
+Following the data minimization principle of {{Section 2.4 of PRIVACY-PRIMER}}, implementations SHOULD provide configurable redaction rules for common patterns and support selective entry type recording based on deployment requirements.
+
+{{Section 2.5 of PRIVACY-PRIMER}} notes that high-risk uses of AI carry additional requirements for data governance and human oversight.
+Records of agents used in such systems are subject to those requirements in addition to the considerations in this section.
 
 ## Redaction and De-identification
 
@@ -910,6 +922,20 @@ The input parameter of "tool-call" type Event Objects, the output parameter of "
 The same applies to the Dialog Content of the Dialog Objects that represent messages, to the working_dir and sandboxes members of the Environment Object, and to the path and url members of the File_Attribution Object.
 A redactor is expected to handle these parameters like Dialog Content, using the redacted parameter of {{VCON-CORE}}.
 A redactor that removes an Event Object entirely leaves a placeholder in the events array, so that indexes in other Objects do not change.
+
+Replacing identifiers in these parameters with pseudonyms does not by itself make a record non-personal data.
+As {{Section 2.2.5 of PRIVACY-PRIMER}} explains, pseudonymized data that can be linked back to a person remains personal data in many jurisdictions.
+File paths, repository names, session identifiers, and tool inputs are indirect identifiers that can support re-identification even after direct identifiers are removed ({{Section 2.2.7 of PRIVACY-PRIMER}}).
+De-identification of agent records therefore needs to consider these parameters, using the techniques described in {{Section 2.2.6 of PRIVACY-PRIMER}}.
+
+## Data Subject Rights
+
+{{Section 2.2.2 of PRIVACY-PRIMER}} describes the rights of data subjects, including access to and deletion of their data.
+A signed record cannot be modified without invalidating its signature.
+A deletion or correction request is therefore met by producing a redacted or amended vCon as defined in {{VCON-CORE}}, not by modifying the signed original, which then remains subject to the retention considerations below.
+
+A record registered with a Transparency Service ({{-scitt-arch}}) cannot be removed from its append-only log.
+Implementations that register records SHOULD register them with a detached payload ({{scitt-cose}}), so that the Transparency Service does not hold the personal data in the record.
 
 ## External References
 
@@ -920,7 +946,7 @@ They are not protected by a content_hash.
 ## Retention Considerations
 
 Multiple frameworks impose retention requirements that may conflict with data minimization principles.
-Organizations must balance compliance obligations requiring extended retention against privacy principles requiring timely deletion.
+Organizations must balance compliance obligations requiring extended retention against the storage limitation principle of {{Section 2.4 of PRIVACY-PRIMER}} and the retention limits for communications described in {{Section 2.3 of PRIVACY-PRIMER}}.
 
 Compliant data management may require separating raw personal data from audit trail metadata, implementing automated deletion for personal data after compliance-minimum periods, and maintaining cryptographic commitments enabling verification without retaining content.
 
@@ -931,12 +957,13 @@ Session identifiers enable linking of records across time, potentially revealing
 Implementations SHOULD use unlinkable session identifiers where correlation is not required.
 
 Without accessing record content, observers may infer conversation frequency and duration patterns, types of tools used, error rates, or timing correlations with external events.
+Collections of records carry the re-identification and inference risks of aggregated data described in {{Section 2.2.7 of PRIVACY-PRIMER}}.
 Metadata exposure in unprotected headers warrants careful consideration; the trace-metadata in the COSE unprotected header ({{scitt-cose}}) reveals session identifiers, agent vendor, and timestamps even when the payload is encrypted.
 
 ## Authority Access
 
-Regulatory frameworks may require provision of records to authorities upon request.
-Access to records has to be logged, capturing who accessed which records, when access occurred, what legal basis justified access, and what data was disclosed.
+Regulatory frameworks may require provision of records to authorities upon request, within the law enforcement exceptions described in {{Section 2.3 of PRIVACY-PRIMER}}.
+Access to records has to be logged, capturing who accessed which records, when access occurred, what legal basis justified access, and what data was disclosed, in line with the accountability and recordkeeping principles of {{Section 2.4 of PRIVACY-PRIMER}}.
 This creates a recursive consideration: access logs may themselves contain personal data requiring protection.
 
 # Security Considerations
