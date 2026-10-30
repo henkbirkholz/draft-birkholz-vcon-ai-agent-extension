@@ -265,7 +265,7 @@ Yet, AI agents - like humans - are not infallible. They make mistakes, they misu
 * A small business may use an AI agent to manage its inventory, and upon discovering an error, might need a complete trace of what the agent did to determine what went wrong.
 
 
-These use cases also extend into the legal realm. An enterprise using an AI agent for screening job applicants may later get sued by an applicant that was passed up for a role. The enerprise might subpoena the AI agent vendor, requesting a full trace of what the AI Agent did, and why. Similarly, a governmental body investigating malicious steps taken by an AI Agent, might request a full log of all of the sessions that AI Agent had.
+These use cases also extend into the legal realm. An enterprise using an AI agent for screening job applicants may later get sued by an applicant that was passed up for a role. The enterprise might subpoena the AI agent vendor, requesting a full trace of what the AI Agent did, and why. Similarly, a governmental body investigating malicious steps taken by an AI Agent, might request a full log of all of the sessions that AI Agent had.
 
 In all cases - there is a need to exchange information between organizational domains, and then to process that information to obtain important insights. To do this, a standardized object format is required.  This object format needs to carry the record of the conversation between the principal (typically a user, but potentially an AI Agent), and the AI agent which is acting on its behalf. This record needs to contain all of the information needed to answer critical questions - why did it do, when did it do it, how did it do it, and why did it do it?
 
