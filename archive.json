@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-10-29T04:13:19.441317+00:00",
+  "timestamp": "2026-11-01T04:09:25.322323+00:00",
   "repo": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
   "labels": [
     {
@@ -61,20 +61,202 @@
       "id": "PR_kwDOVYb3qc8AAAABLX2HmQ",
       "title": "Abstract and Intro Refocus and clarification",
       "url": "https://github.com/henkbirkholz/draft-birkholz-vcon-ai-agent-extension/pull/1",
-      "state": "OPEN",
+      "state": "MERGED",
       "author": "jdrosen",
-      "authorAssociation": "NONE",
+      "authorAssociation": "CONTRIBUTOR",
       "assignees": [],
       "labels": [],
       "body": "I did major wording changes in the abstract and intro, to strengthen the motivation and provide greater clarity. I also removed a few straggler references to the old VACR format that I don't think are needed anymore.",
       "createdAt": "2026-10-28T21:43:46Z",
-      "updatedAt": "2026-10-28T21:43:46Z",
+      "updatedAt": "2026-10-30T11:48:21Z",
       "baseRepository": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
       "baseRefName": "main",
       "baseRefOid": "35c126d280f266f446ec6898c8c666cd59b29a69",
       "headRepository": "jdrosen/draft-birkholz-vcon-ai-agent-extension",
       "headRefName": "main",
-      "headRefOid": "fbe1bb457c470d698b696964fe1c46767b39d8bc",
+      "headRefOid": "77b7388032afcaea4e0b975c9d046517c765bf54",
+      "closedAt": "2026-10-30T11:48:21Z",
+      "mergedAt": "2026-10-30T11:48:21Z",
+      "mergedBy": "henkbirkholz",
+      "mergeCommit": {
+        "oid": "d645cb9ce0921907e256f3ffe19e6fd00b2f0404"
+      },
+      "comments": [],
+      "reviews": [
+        {
+          "id": "PRR_kwDOVYb3qc8AAAABVHEqkQ",
+          "commit": {
+            "abbreviatedOid": "fbe1bb4"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-30T11:38:32Z",
+          "updatedAt": "2026-10-30T11:38:33Z",
+          "comments": [
+            {
+              "originalPosition": 31,
+              "body": "```suggestion\nAn AI Agent is a system that performs actions on behalf of a principal in a fully or semi-autonomous fashion. AI Agents are growing rapidly in their adoption across the Internet, finding usage in business, consumer, government and other applications.\n```",
+              "createdAt": "2026-10-30T11:38:32Z",
+              "updatedAt": "2026-10-30T11:38:33Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOVYb3qc8AAAABVHFESg",
+          "commit": {
+            "abbreviatedOid": "fbe1bb4"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "OWNER",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-10-30T11:39:14Z",
+          "updatedAt": "2026-10-30T11:39:15Z",
+          "comments": [
+            {
+              "originalPosition": 55,
+              "body": "```suggestion\nThese use cases also extend into the legal realm. An enterprise using an AI agent for screening job applicants may later get sued by an applicant that was passed up for a role. The enterprise might subpoena the AI agent vendor, requesting a full trace of what the AI Agent did, and why. Similarly, a governmental body investigating malicious steps taken by an AI Agent, might request a full log of all of the sessions that AI Agent had.\n```",
+              "createdAt": "2026-10-30T11:39:14Z",
+              "updatedAt": "2026-10-30T11:39:15Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOVYb3qc8AAAABVHJ93Q",
+          "commit": {
+            "abbreviatedOid": "77b7388"
+          },
+          "author": "henkbirkholz",
+          "authorAssociation": "OWNER",
+          "state": "APPROVED",
+          "body": "I like the additional goals (and editorial on goal representation). The abstract now covers a small ref to VACR, which I like a lot (better than the clumsy references in the body). The introduction might require some more massaging, but with your proposed changes is good as is!\n\nI'll follow up with an editorial pass of \"on sentence per linebreak\" for easier to read diffs.",
+          "createdAt": "2026-10-30T11:46:08Z",
+          "updatedAt": "2026-10-30T11:46:08Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 2,
+      "id": "PR_kwDOVYb3qc8AAAABLwtpnA",
+      "title": "Re-establishing \"one sentence per linebreak\" (OSPL)",
+      "url": "https://github.com/henkbirkholz/draft-birkholz-vcon-ai-agent-extension/pull/2",
+      "state": "OPEN",
+      "author": "henkbirkholz",
+      "authorAssociation": "OWNER",
+      "assignees": [],
+      "labels": [],
+      "body": "Also fixing some stray typos and a weird interrogative adverb ",
+      "createdAt": "2026-10-30T12:21:20Z",
+      "updatedAt": "2026-10-30T14:37:25Z",
+      "baseRepository": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
+      "baseRefName": "main",
+      "baseRefOid": "d645cb9ce0921907e256f3ffe19e6fd00b2f0404",
+      "headRepository": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
+      "headRefName": "editorial_ospl+typos",
+      "headRefOid": "e71f724b0639df8faea41e4fe192eb4cbf99293d",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [
+        {
+          "author": "jdrosen",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "This looks good to me.",
+          "createdAt": "2026-10-30T14:36:42Z",
+          "updatedAt": "2026-10-30T14:36:42Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOVYb3qc8AAAABVJKoYg",
+          "commit": {
+            "abbreviatedOid": "e71f724"
+          },
+          "author": "jdrosen",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Looks good.",
+          "createdAt": "2026-10-30T14:37:25Z",
+          "updatedAt": "2026-10-30T14:37:25Z",
+          "comments": []
+        }
+      ]
+    },
+    {
+      "number": 3,
+      "id": "PR_kwDOVYb3qc8AAAABLzHIhA",
+      "title": "Add recording agent identity fields",
+      "url": "https://github.com/henkbirkholz/draft-birkholz-vcon-ai-agent-extension/pull/3",
+      "state": "OPEN",
+      "author": "howethomas",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Makes recording_agent.version required and adds optional vendor, id, source_format and source_format_version, with matching CDDL, examples and trust-boundary text.",
+      "createdAt": "2026-10-30T15:25:10Z",
+      "updatedAt": "2026-10-30T15:25:10Z",
+      "baseRepository": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
+      "baseRefName": "main",
+      "baseRefOid": "d645cb9ce0921907e256f3ffe19e6fd00b2f0404",
+      "headRepository": "howethomas/draft-birkholz-vcon-ai-agent-extension",
+      "headRefName": "recording-agent-info",
+      "headRefOid": "b298eb0cdf5365cee1ada3cf10e50d22c0fa7bed",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 4,
+      "id": "PR_kwDOVYb3qc8AAAABLzLD0g",
+      "title": "Rewrite introduction in the active voice",
+      "url": "https://github.com/henkbirkholz/draft-birkholz-vcon-ai-agent-extension/pull/4",
+      "state": "OPEN",
+      "author": "howethomas",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Rewrites the introduction in the active voice. Wording only, no normative changes.",
+      "createdAt": "2026-10-30T15:29:40Z",
+      "updatedAt": "2026-10-30T15:29:40Z",
+      "baseRepository": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
+      "baseRefName": "main",
+      "baseRefOid": "d645cb9ce0921907e256f3ffe19e6fd00b2f0404",
+      "headRepository": "howethomas/draft-birkholz-vcon-ai-agent-extension",
+      "headRefName": "active-voice-intro",
+      "headRefOid": "9219d3187660bccaea147fe90c8fa37489294997",
+      "closedAt": null,
+      "mergedAt": null,
+      "mergedBy": null,
+      "mergeCommit": null,
+      "comments": [],
+      "reviews": []
+    },
+    {
+      "number": 5,
+      "id": "PR_kwDOVYb3qc8AAAABLzSLcg",
+      "title": "Active-voice introduction and Privacy Primer references",
+      "url": "https://github.com/henkbirkholz/draft-birkholz-vcon-ai-agent-extension/pull/5",
+      "state": "OPEN",
+      "author": "howethomas",
+      "authorAssociation": "NONE",
+      "assignees": [],
+      "labels": [],
+      "body": "Rewrites the introduction in the active voice, adds references to the Privacy Primer, and moves key privacy points into the normative text of the spec.",
+      "createdAt": "2026-10-30T15:37:57Z",
+      "updatedAt": "2026-10-30T15:37:57Z",
+      "baseRepository": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
+      "baseRefName": "main",
+      "baseRefOid": "d645cb9ce0921907e256f3ffe19e6fd00b2f0404",
+      "headRepository": "howethomas/draft-birkholz-vcon-ai-agent-extension",
+      "headRefName": "privacy-primer-refs",
+      "headRefOid": "1c450df65178003b5f607416b6bbe91f3c91f16c",
       "closedAt": null,
       "mergedAt": null,
       "mergedBy": null,
