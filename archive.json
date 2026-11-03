@@ -1,6 +1,6 @@
 {
   "magic": "E!vIA5L86J2I",
-  "timestamp": "2026-11-01T04:09:25.322323+00:00",
+  "timestamp": "2026-11-03T05:12:25.991086+00:00",
   "repo": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
   "labels": [
     {
@@ -198,7 +198,7 @@
       "labels": [],
       "body": "Makes recording_agent.version required and adds optional vendor, id, source_format and source_format_version, with matching CDDL, examples and trust-boundary text.",
       "createdAt": "2026-10-30T15:25:10Z",
-      "updatedAt": "2026-10-30T15:25:10Z",
+      "updatedAt": "2026-11-02T15:52:48Z",
       "baseRepository": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
       "baseRefName": "main",
       "baseRefOid": "d645cb9ce0921907e256f3ffe19e6fd00b2f0404",
@@ -209,8 +209,30 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
-      "reviews": []
+      "comments": [
+        {
+          "author": "dgpetrie",
+          "authorAssociation": "NONE",
+          "body": "I do like the term: Observer better than Recording_agent.   I also think that we will often have more than one Observer.   We certainly to in contact center scenarios.   I would consider an array of observers at the top level and reference(s) in all the objects.",
+          "createdAt": "2026-11-02T15:52:48Z",
+          "updatedAt": "2026-11-02T15:52:48Z"
+        }
+      ],
+      "reviews": [
+        {
+          "id": "PRR_kwDOVYb3qc8AAAABVfVTpg",
+          "commit": {
+            "abbreviatedOid": "b298eb0"
+          },
+          "author": "jdrosen",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "APPROVED",
+          "body": "Looks fine to me.",
+          "createdAt": "2026-11-02T13:16:48Z",
+          "updatedAt": "2026-11-02T13:16:48Z",
+          "comments": []
+        }
+      ]
     },
     {
       "number": 4,
@@ -224,7 +246,7 @@
       "labels": [],
       "body": "Rewrites the introduction in the active voice. Wording only, no normative changes.",
       "createdAt": "2026-10-30T15:29:40Z",
-      "updatedAt": "2026-10-30T15:29:40Z",
+      "updatedAt": "2026-11-02T13:24:59Z",
       "baseRepository": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
       "baseRefName": "main",
       "baseRefOid": "d645cb9ce0921907e256f3ffe19e6fd00b2f0404",
@@ -235,7 +257,15 @@
       "mergedAt": null,
       "mergedBy": null,
       "mergeCommit": null,
-      "comments": [],
+      "comments": [
+        {
+          "author": "jdrosen",
+          "authorAssociation": "CONTRIBUTOR",
+          "body": "I did a read of it. It is fine - as noted - its not changing any of the content really. Its a stylistic change. The previous introduction was more in the style I write, I suppose this is more in the style Thomas writes (or prefers). If given the choice I would probably not merge it, only because it sounds less like me. But if Thomas feels its important, I'm not going to die on this hill for sure.",
+          "createdAt": "2026-11-02T13:24:59Z",
+          "updatedAt": "2026-11-02T13:24:59Z"
+        }
+      ],
       "reviews": []
     },
     {
@@ -250,7 +280,7 @@
       "labels": [],
       "body": "Rewrites the introduction in the active voice, adds references to the Privacy Primer, and moves key privacy points into the normative text of the spec.",
       "createdAt": "2026-10-30T15:37:57Z",
-      "updatedAt": "2026-10-30T15:37:57Z",
+      "updatedAt": "2026-11-02T13:41:39Z",
       "baseRepository": "henkbirkholz/draft-birkholz-vcon-ai-agent-extension",
       "baseRefName": "main",
       "baseRefOid": "d645cb9ce0921907e256f3ffe19e6fd00b2f0404",
@@ -262,7 +292,108 @@
       "mergedBy": null,
       "mergeCommit": null,
       "comments": [],
-      "reviews": []
+      "reviews": [
+        {
+          "id": "PRR_kwDOVYb3qc8AAAABVfjXSQ",
+          "commit": {
+            "abbreviatedOid": "1c450df"
+          },
+          "author": "jdrosen",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-02T13:34:37Z",
+          "updatedAt": "2026-11-02T13:34:37Z",
+          "comments": [
+            {
+              "originalPosition": 99,
+              "body": "This is a SHOULD level statement for a set of actions which are not at all clear. I don't think we can use normative style language here, since there is no real way to even assess conformance. ",
+              "createdAt": "2026-11-02T13:34:37Z",
+              "updatedAt": "2026-11-02T13:34:37Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOVYb3qc8AAAABVfjv9w",
+          "commit": {
+            "abbreviatedOid": "1c450df"
+          },
+          "author": "jdrosen",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-02T13:35:07Z",
+          "updatedAt": "2026-11-02T13:35:07Z",
+          "comments": [
+            {
+              "originalPosition": 102,
+              "body": "This all seems vague - what is the concrete guidance here?",
+              "createdAt": "2026-11-02T13:35:07Z",
+              "updatedAt": "2026-11-02T13:35:07Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOVYb3qc8AAAABVfn0Zg",
+          "commit": {
+            "abbreviatedOid": "1c450df"
+          },
+          "author": "jdrosen",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-02T13:40:09Z",
+          "updatedAt": "2026-11-02T13:40:09Z",
+          "comments": [
+            {
+              "originalPosition": 113,
+              "body": "This is making it sound like privacy-primer is a normative reference? Section 2.2.6 doesnt contain anything close to normative behavior that could be followed here.",
+              "createdAt": "2026-11-02T13:40:09Z",
+              "updatedAt": "2026-11-02T13:40:09Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOVYb3qc8AAAABVfojzA",
+          "commit": {
+            "abbreviatedOid": "1c450df"
+          },
+          "author": "jdrosen",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-02T13:40:57Z",
+          "updatedAt": "2026-11-02T13:40:58Z",
+          "comments": [
+            {
+              "originalPosition": 122,
+              "body": "This also seems misplaced here - are we taking a normative dependency on SCITT now because of this SHOULD level statement?",
+              "createdAt": "2026-11-02T13:40:57Z",
+              "updatedAt": "2026-11-02T13:40:58Z"
+            }
+          ]
+        },
+        {
+          "id": "PRR_kwDOVYb3qc8AAAABVfpKqg",
+          "commit": {
+            "abbreviatedOid": "1c450df"
+          },
+          "author": "jdrosen",
+          "authorAssociation": "CONTRIBUTOR",
+          "state": "COMMENTED",
+          "body": "",
+          "createdAt": "2026-11-02T13:41:39Z",
+          "updatedAt": "2026-11-02T13:41:39Z",
+          "comments": [
+            {
+              "originalPosition": 132,
+              "body": "A brief summary of what those sections say would be good.",
+              "createdAt": "2026-11-02T13:41:39Z",
+              "updatedAt": "2026-11-02T13:41:39Z"
+            }
+          ]
+        }
+      ]
     }
   ]
 }
